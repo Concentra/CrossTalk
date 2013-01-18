@@ -10,7 +10,7 @@ var msgTemplate = '<article class="message">\
 						<header><span>{from}</span>&nbsp;&nbsp;&#x25B6;&nbsp;&nbsp;<span>{to}</span></header>\
 						<img src=""/>\
 						<span class="message-content">\
-							{message}\
+							{Body}\
 						</span>\
 						<footer>\
 							<span class="message-timestamp">{time}</span>\
@@ -26,6 +26,7 @@ $(document).ready(function () {
             var result = '';
             console.log(data);
             if (data && data instanceof Array) {
+                var row;
                 while (row = data.pop()) {
                     result += msgTemplate.replace(/\{[A-Za-z]+\}/gmi, function (match) {
                         return row[match.slice(1, -1)] || match;

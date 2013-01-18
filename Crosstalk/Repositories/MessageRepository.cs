@@ -29,15 +29,15 @@ namespace Crosstalk.Repositories
             throw new NotImplementedException();
         }
 
-        public Message Get(object messageId)
+        public Message Get(string messageId)
         {
-            return this.GetCollection().FindOne(Query.EQ("_id", (ObjectId) messageId));
+            return this.GetCollection().FindOne(Query.EQ("_id", messageId));
         }
 
-        public object Save(Message message)
+        public bool Save(Message message)
         {
             var result = this.GetCollection().Insert(message);
-            return result.Ok ? message.Id : ObjectId.Empty;
+            return result.Ok;
         }
     }
 }

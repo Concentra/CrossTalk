@@ -8,6 +8,7 @@ using Autofac;
 using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
 using Crosstalk.App_Start;
+using Crosstalk.Binders;
 using Crosstalk.Repositories;
 
 namespace Crosstalk
@@ -22,6 +23,8 @@ namespace Crosstalk
                 defaults: new { id = RouteParameter.Optional }
             );
 
+            // Dependency Injection
+
             var builder = new ContainerBuilder();
 
             builder.RegisterInstance<IMessageRepository>(new MessageRepository(MongoConfig.GetDb()));
@@ -34,6 +37,10 @@ namespace Crosstalk
             
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
             GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);
+
+            // Binders
+
+            ModelBinders.Binders.Add(typeof(MongoDB.Bson.ObjectId), new ObjectIdModelBinder());
 
         }
     }

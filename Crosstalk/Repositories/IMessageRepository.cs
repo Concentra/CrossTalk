@@ -8,8 +8,8 @@ namespace Crosstalk.Repositories
     {
         IList<Message> GetList();
         IList<Message> GetListForEdge(Edge edge);
-        Message Get(object messageId);
-        object Save(Message message);
+        Message Get(string messageId);
+        bool Save(Message message);
         // void Moderate(int messageId);
         // void Report(int messageId);
     }
