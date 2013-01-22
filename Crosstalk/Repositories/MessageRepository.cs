@@ -10,13 +10,13 @@ using Crosstalk.Models;
 
 namespace Crosstalk.Repositories
 {
-    public class MessageRepository : MongoRepository<Message>, IMessageRepository
+    public class MessageRepository : BaseMongoRepository<Message>, IMessageRepository
     {
         public MessageRepository(MongoDatabase database) : base(database) {}
 
-        protected override string GetCollectionName()
+        protected override string Collection
         {
-            return "messages";
+            get { return "messages"; }
         }
 
         public IList<Message> GetList()
@@ -26,12 +26,12 @@ namespace Crosstalk.Repositories
 
         public IList<Message> GetListForEdge(Edge edge)
         {
-            throw new NotImplementedException();
+            return this.GetCollection().AsQueryable().Where(m => m.Edge.Id == edge.Id).ToList();
         }
 
         public Message Get(string messageId)
         {
-            return this.GetCollection().FindOne(Query.EQ("_id", messageId));
+            return this.GetCollection().AsQueryable().Single(m => m.Id == ObjectId.Parse(messageId));
         }
 
         public bool Save(Message message)

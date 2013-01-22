@@ -14,10 +14,8 @@ namespace Crosstalk.Models
     public class Message
     {
         [BsonId]
-        public string Id { get; set; }
-
-        public string Edge { get; set; }   
-
+        public ObjectId Id { get; set; }
+        public Edge Edge { get; set; }
         public string Body { get; set; }
     }
 }

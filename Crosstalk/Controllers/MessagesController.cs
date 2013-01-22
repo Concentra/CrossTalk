@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Mvc;
 using Crosstalk.Binders;
+using Crosstalk.Exceptions;
 using Crosstalk.Models;
 using Crosstalk.Repositories;
 using MongoDB.Bson;
@@ -18,43 +19,51 @@ namespace Crosstalk.Controllers
     {
 
         private readonly IMessageRepository _messageRepository;
+        private readonly IEdgeRepository _edgeRepository;
+        private readonly IIdentityRepository _identityRepository;
 
-        public MessagesController(IMessageRepository repository)
+        public MessagesController(IMessageRepository messageRepository, IEdgeRepository edgeRepository, IIdentityRepository identityRepository)
         {
-            this._messageRepository = repository;
+            this._messageRepository = messageRepository;
+            this._edgeRepository = edgeRepository;
+            this._identityRepository = identityRepository;
         }
 
-        // GET api/values
+        // GET api/messages?identity=id
         /// <summary>
         /// Gets all messages in the public space
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Message> Get()
+        public IEnumerable<Message> GetAtIdentity(string id)
         {
-            return this._messageRepository.GetList();
+            var me = this._identityRepository.GetById(ObjectId.Parse(id));
+            var edges = this._edgeRepository.GetToNode(me);
+            var messages = new List<Message>();
+            foreach (var edge in edges)
+            {
+                var identity = this._identityRepository.GetById(edge.From.Id);
+                edge.From = identity;
+                edge.To = me;
+                messages.AddRange(this._messageRepository.GetListForEdge(edge));
+            }
+            return messages;
         }
 
-        // GET api/values/5
+        // GET api/messages/:id
         /// <summary>
         /// Get a specific message
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public string Get(int id)
+        public Message Get(string id)
         {
-            return "";
+            return this._messageRepository.Get(id);
         }
 
-        // POST api/values
-        //public string Post(JObject post)
+        // POST api/messages
         public Message Post(Message message)
         {
-            //var message = new Message()
-            //    {
-            //        Edge = post["Edge"].ToString(),
-            //        Body = post["Body"].ToString()
-            //    };
-            message.Id = ObjectId.GenerateNewId().ToString();
+            message.Id = ObjectId.GenerateNewId();
             this._messageRepository.Save(message);
             return message;
         }
@@ -67,6 +76,7 @@ namespace Crosstalk.Controllers
         // DELETE api/values/5
         public void Delete(int id)
         {
+            throw new OutsideOfProjectScopeException();
         }
     }
 }

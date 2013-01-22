@@ -7,20 +7,20 @@ using MongoDB.Driver;
 
 namespace Crosstalk.Repositories
 {
-    public abstract class MongoRepository<TDocument>
+    public abstract class BaseMongoRepository<TDocument>
     {
-        private MongoDatabase _database;
+        private readonly MongoDatabase _database;
 
-        public MongoRepository(MongoDatabase database)
+        protected BaseMongoRepository(MongoDatabase database)
         {
             this._database = database;
         }
 
         protected MongoCollection<TDocument> GetCollection()
         {
-            return this._database.GetCollection<TDocument>(this.GetCollectionName());
+            return this._database.GetCollection<TDocument>(this.Collection);
         }
 
-        protected abstract string GetCollectionName();
+        protected abstract string Collection { get; }
     }
 }

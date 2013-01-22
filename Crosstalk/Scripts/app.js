@@ -39,7 +39,7 @@ $(document).ready(function () {
 
     $('input[name="send"]').click(function () {
         $('#send-activity').show();
-        $.post(config.endpoint + '/' + config.routes.send, { Edge: "50f82bee76d13f2558d9887f", Body: $('#message').val() }, function () {
+        $.post(config.endpoint + '/' + config.routes.send, { Edge: { Id: "50f82bee76d13f2558d9887f" }, Body: $('#message').val() }, function () {
             refreshMessages();
             $('#message').val('');
             $('#send-activity').hide();

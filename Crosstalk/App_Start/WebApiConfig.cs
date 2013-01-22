@@ -10,6 +10,7 @@ using Autofac.Integration.WebApi;
 using Crosstalk.App_Start;
 using Crosstalk.Binders;
 using Crosstalk.Repositories;
+using Neo4jClient;
 
 namespace Crosstalk
 {
@@ -28,6 +29,7 @@ namespace Crosstalk
             var builder = new ContainerBuilder();
 
             builder.RegisterInstance<IMessageRepository>(new MessageRepository(MongoConfig.GetDb()));
+            builder.RegisterInstance<IEdgeRepository>(new EdgeRepository(Neo4JConfig.GetClient()));
 
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
                    .Where(t => !t.IsAbstract && typeof(ApiController).IsAssignableFrom(t))
@@ -37,6 +39,20 @@ namespace Crosstalk
             
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
             GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);
+
+            //
+
+            //builder.Register<IGraphClient>(context =>
+            //{
+            //    var graphClient = new GraphClient(baseUri, false, false);
+            //    graphClient.Connect();
+
+            //    if (graphClientOperationCompletedHandler != null)
+            //        graphClient.OperationCompleted += graphClientOperationCompletedHandler;
+
+            //    return graphClient;
+            //})
+            //.SingleInstance();
 
             // Binders
 
