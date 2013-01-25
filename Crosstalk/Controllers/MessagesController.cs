@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Collections.Generic;
 using System.Web.Http;
-using System.Web.Mvc;
-using Crosstalk.Binders;
 using Crosstalk.Exceptions;
 using Crosstalk.Models;
 using Crosstalk.Repositories;
 using MongoDB.Bson;
-using MongoDB.Driver.Linq;
-using Newtonsoft.Json.Linq;
 
 namespace Crosstalk.Controllers
 {
@@ -34,16 +26,15 @@ namespace Crosstalk.Controllers
         /// Gets all messages in the public space
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Message> GetAtIdentity(string id)
+        public IEnumerable<Message> GetByIdentity(string identity, bool thisIsMe)
         {
-            var me = this._identityRepository.GetById(ObjectId.Parse(id));
-            var edges = this._edgeRepository.GetToNode(me);
+            var me = this._identityRepository.GetById(ObjectId.Parse(identity));
+            var edges = new List<Edge>(this._edgeRepository.GetToNode(me, (uint) (thisIsMe ? 2 : 1)));
             var messages = new List<Message>();
             foreach (var edge in edges)
             {
-                var identity = this._identityRepository.GetById(edge.From.Id);
-                edge.From = identity;
-                edge.To = me;
+                edge.From = edge.From.Id == me.Id ? me : this._identityRepository.GetById(edge.From.Id);
+                edge.To = edge.To.Id == me.Id ? me : this._identityRepository.GetById(edge.To.Id);
                 messages.AddRange(this._messageRepository.GetListForEdge(edge));
             }
             return messages;

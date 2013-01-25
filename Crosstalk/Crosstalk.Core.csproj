@@ -146,20 +146,18 @@
     <Compile Include="App_Start\Neo4JConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Binders\ObjectIdModelBinder.cs" />
+    <Compile Include="Controllers\EdgeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IdentityController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
-    <Compile Include="Convertors\ObjectIdConvertor.cs" />
     <Compile Include="Enums\Edges.cs" />
     <Compile Include="Enums\Identities.cs" />
+    <Compile Include="Exceptions\ObjectNotFoundException.cs" />
     <Compile Include="Exceptions\OutsideOfProjectScopeException.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Message.cs" />
-    <Compile Include="Models\Edge.cs" />
-    <Compile Include="Models\Identity.cs" />
+    <Compile Include="Handlers\ObjectNotFoundExceptionAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Relationships\Broadcast.cs" />
     <Compile Include="Repositories\BaseNeo4JRepository.cs" />
@@ -170,7 +168,6 @@
     <Compile Include="Repositories\IMessageRepository.cs" />
     <Compile Include="Repositories\MessageRepository.cs" />
     <Compile Include="Repositories\BaseMongoRepository.cs" />
-    <Compile Include="Services\EdgeService.cs" />
     <Compile Include="Services\IdentityService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -264,9 +261,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Crosstalk.Models\Crosstalk.Models.csproj">
+      <Project>{d53a64a6-a8e1-43a5-a14e-5e03fdc29b97}</Project>
+      <Name>Crosstalk.Models</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -284,7 +288,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerPort>2633</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:9510/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

@@ -12,5 +12,6 @@ namespace Crosstalk.Repositories
         Edge GetById(long id);
         IEnumerable<Edge> GetFromNode(Identity node);
         IEnumerable<Edge> GetToNode(Identity node);
+        IEnumerable<Edge> GetToNode(Identity node, uint depth);
     }
 }

@@ -10,8 +10,8 @@ namespace Crosstalk.Relationships
 {
     public class Broadcast :
         Relationship,
-        IRelationshipAllowingSourceNode<Identity>,
-        IRelationshipAllowingTargetNode<Identity>
+        IRelationshipAllowingSourceNode<GraphIdentity>,
+        IRelationshipAllowingTargetNode<GraphIdentity>
     {
         public Broadcast(NodeReference targetNode)
             : base(targetNode)

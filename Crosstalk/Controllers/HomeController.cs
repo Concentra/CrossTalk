@@ -21,6 +21,10 @@ namespace Crosstalk.Controllers
 
         public ActionResult Bootstrap()
         {
+            var mClient = MongoConfig.GetDb();
+            mClient.GetCollection("indentity").RemoveAll();
+            mClient.GetCollection("messages").RemoveAll();
+
             var gClient = Neo4JConfig.GetClient();
             gClient.Connect();
             gClient.ExecuteScalarGremlin("g.V.each{g.removeVertex(it)}", null);
@@ -31,28 +35,35 @@ namespace Crosstalk.Controllers
                 gClient
                 );
             // Create some identities
-            var root = idSrv.CreateIdentity("root");
+            var root = idSrv.CreatePublic();
 
-            var trustA = idSrv.CreateIdentityWithAssociation("trustA", root);
-            var trustB = idSrv.CreateIdentityWithAssociation("trustB", root);
-            var trustC = idSrv.CreateIdentityWithAssociation("trustC", root);
+            var trustA = idSrv.CreateGroup("NHS Trust", null, new Identity[] {root});
+            var trustB = idSrv.CreateGroup("NHS Trust", null, new Identity[] { root });
+            var trustC = idSrv.CreateGroup("NHS Trust", null, new Identity[] { root });
 
-            var groupA = idSrv.CreateIdentityWithAssociation("groupA", trustA);
-            var groupB = idSrv.CreateIdentityWithAssociation("groupB", trustA);
-            var groupC = idSrv.CreateIdentityWithAssociation("groupC", trustB);
-            var groupD = idSrv.CreateIdentityWithAssociation("groupD", trustB);
-            var groupE = idSrv.CreateIdentityWithAssociation("groupE", trustC);
+            var groupA = idSrv.CreateGroup("Expectant Mothers", null, new Identity[] {root, trustA});
+            var groupB = idSrv.CreateGroup("Breastfeeding", null, new Identity[] { root, trustA });
+            var groupC = idSrv.CreateGroup("Baby Café - Islington", null, new Identity[] { root, trustB });
+            var groupD = idSrv.CreateGroup("Baby Café - Chelsea", null, new Identity[] { root, trustB });
+            var groupE = idSrv.CreateGroup("Coffee Group", null, new Identity[] { root, trustC });
 
-            var idA = idSrv.CreateIdentityWithAssociation("idA", groupA);
-            var idB = idSrv.CreateIdentityWithAssociation("idB", groupB);
-            var idC = idSrv.CreateIdentityWithAssociation("idC", groupB);
-            var idD = idSrv.CreateIdentityWithAssociation("idD", groupB);
-            var idE = idSrv.CreateIdentityWithAssociation("idE", groupB);
-            var idF = idSrv.CreateIdentityWithAssociation("idF", groupC);
-            var idG = idSrv.CreateIdentityWithAssociation("idG", groupD);
-            var idH = idSrv.CreateIdentityWithAssociation("idH", groupE);
+            var idA = idSrv.CreatePerson("Alison", "/images/avatars/1.jpg", new Identity[] { root, groupA, groupB }, new Identity[] { groupA, groupB });
+            var idB = idSrv.CreatePerson("Amy", "/images/avatars/1.jpg", new Identity[] { root, groupA, groupB }, new Identity[] { groupA, groupB });
+            var idC = idSrv.CreatePerson("Eve", "/images/avatars/1.jpg", new Identity[] { root, groupA, groupC }, new Identity[] { groupA, groupC });
+            var idD = idSrv.CreatePerson("Steve", "/images/avatars/1.jpg", new Identity[] { root, groupC, idC }, new Identity[] { groupC, idC });
+            var idE = idSrv.CreatePerson("Jon", "/images/avatars/1.jpg", new Identity[] { root, groupE, groupD }, new Identity[] { groupE, groupD });
+            var idF = idSrv.CreatePerson("Theo", "/images/avatars/1.jpg", new Identity[] { root, groupD, groupE, idE }, new Identity[] { groupD, groupE, idE });
+            var idG = idSrv.CreatePerson("Lydia", "/images/avatars/1.jpg", new Identity[] { root, groupA, groupB, idA, groupC, idC }, new Identity[] { groupA, groupB, idA, groupC, idC });
+            var idH = idSrv.CreatePerson("Connor", "/images/avatars/1.jpg", new Identity[] { root, groupD, groupE, idE, idF }, new Identity[] { groupD, groupE, idE, idF });
 
             return new ContentResult {Content = "ok"};
+        }
+
+        public ActionResult Dump()
+        {
+            var gClient = Neo4JConfig.GetClient();
+            gClient.Connect();
+            return new ContentResult {Content = gClient.ExecuteScalarGremlin("g.V.Id", null).ToJson()};
         }
     }
 }

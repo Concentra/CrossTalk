@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Newtonsoft.Json;
 
-namespace Crosstalk.Convertors
+namespace Crosstalk.Models.Convertors
 {
     public class ObjectIdConvertor : JsonConverter
     {
@@ -15,12 +12,16 @@ namespace Crosstalk.Convertors
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (typeof (MongoDB.Bson.ObjectId) == objectType)
+            {
+                return existingValue;
+            }
             return new MongoDB.Bson.ObjectId((string)existingValue);
         }
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof (MongoDB.Bson.ObjectId) == objectType;
+            return typeof (MongoDB.Bson.ObjectId) == objectType || typeof(string) == objectType;
         }
     }
 }

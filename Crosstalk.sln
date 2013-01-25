@@ -1,7 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crosstalk", "Crosstalk\Crosstalk.csproj", "{83856C37-B54A-4D7D-A5FD-C991EC7813BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crosstalk.Core", "Crosstalk\Crosstalk.Core.csproj", "{83856C37-B54A-4D7D-A5FD-C991EC7813BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebUI", "WebUI\WebUI.csproj", "{BD8D7C7A-EAC3-4F5E-A540-E17816250546}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crosstalk.Models", "Crosstalk.Models\Crosstalk.Models.csproj", "{D53A64A6-A8E1-43A5-A14E-5E03FDC29B97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +17,14 @@ Global
 		{83856C37-B54A-4D7D-A5FD-C991EC7813BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83856C37-B54A-4D7D-A5FD-C991EC7813BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83856C37-B54A-4D7D-A5FD-C991EC7813BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD8D7C7A-EAC3-4F5E-A540-E17816250546}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD8D7C7A-EAC3-4F5E-A540-E17816250546}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD8D7C7A-EAC3-4F5E-A540-E17816250546}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD8D7C7A-EAC3-4F5E-A540-E17816250546}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D53A64A6-A8E1-43A5-A14E-5E03FDC29B97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D53A64A6-A8E1-43A5-A14E-5E03FDC29B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D53A64A6-A8E1-43A5-A14E-5E03FDC29B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D53A64A6-A8E1-43A5-A14E-5E03FDC29B97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

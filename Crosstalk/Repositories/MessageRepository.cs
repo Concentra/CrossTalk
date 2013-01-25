@@ -26,7 +26,12 @@ namespace Crosstalk.Repositories
 
         public IList<Message> GetListForEdge(Edge edge)
         {
-            return this.GetCollection().AsQueryable().Where(m => m.Edge.Id == edge.Id).ToList();
+            return this.GetCollection().AsQueryable().Where(m => m.Edge.Id == edge.Id).Select(m => new Message
+                {
+                    Body = m.Body,
+                    Id = m.Id,
+                    Edge = edge
+                }).ToList();
         }
 
         public Message Get(string messageId)

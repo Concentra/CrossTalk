@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Crosstalk.Models;
 using Crosstalk.Repositories;
-using MongoDB.Bson;
 
 namespace Crosstalk.Controllers
 {
@@ -21,7 +15,7 @@ namespace Crosstalk.Controllers
 
         public Identity GetById(string id)
         {
-            return this._repository.GetById(ObjectId.Parse(id));
+            return this._repository.GetById(id);
         }
     }
 }

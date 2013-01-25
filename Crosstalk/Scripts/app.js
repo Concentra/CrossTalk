@@ -2,7 +2,7 @@
     endpoint: "/api",
     routes: {
         send: "messages",
-        list: "messages"
+        list: "messages?identity=50feadf676d13f1ee0f2e613"
     }
 };
 
@@ -21,7 +21,7 @@ $(document).ready(function () {
 
     function refreshMessages() {
         $('#messages-activity').show();
-        $.get(config.endpoint + '/' + config.routes.list + '?callback=?', function (data) {
+        $.get(config.endpoint + '/' + config.routes.list, function (data) {
             $('#messages-activity').hide();
             var result = '';
             console.log(data);

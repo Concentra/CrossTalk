@@ -28,11 +28,70 @@ namespace Crosstalk.Services
         {
             var me = new Identity()
                 {
-                    Id = ObjectId.GenerateNewId(),
-                    Name = name
+                    Name = name,
+                    OId = ObjectId.GenerateNewId()
                 };
-            me.GraphId = this._client.Create<Identity>(me).Id;
+            me.GraphId = this._client.Create(me.ToGraphIdentity()).Id;
             this._identityRepository.Save(me);
+            return me;
+        }
+
+        public Identity CreatePublic()
+        {
+            return this.CreateIdentity(Identity.Public, "", Identity.Public, null, null);
+        }
+
+        public Identity CreateGroup(string name, IEnumerable<Identity> outbound, IEnumerable<Identity> inbound)
+        {
+            return this.CreateIdentity(name, "", Identity.Group, outbound, inbound);
+        }
+
+        public Identity CreatePerson(string name, string avatar, IEnumerable<Identity> outbound,
+                                     IEnumerable<Identity> inbound)
+        {
+            return this.CreateIdentity(name, avatar, Identity.Person, outbound, inbound);
+        }
+
+        public Identity CreateIdentity(string name,
+                                       string avatar,
+                                       string type,
+                                       IEnumerable<Identity> outbound,
+                                       IEnumerable<Identity> inbound)
+        {
+            var me = new Identity
+                {
+                    AvatarUrl = avatar,
+                    Name = name,
+                    Type = type,
+                    OId = ObjectId.GenerateNewId()
+                };
+            me.GraphId = this._client.Create(me.ToGraphIdentity()).Id;
+            this._identityRepository.Save(me);
+
+            if (null != outbound)
+            {
+                foreach (var assoc in outbound)
+                {
+                    this._edgeRepository.Save(new Edge
+                        {
+                            To = assoc,
+                            From = me
+                        });
+                }
+            }
+
+            if (null != inbound)
+            {
+                foreach (var assoc in inbound)
+                {
+                    this._edgeRepository.Save(new Edge
+                        {
+                            From = assoc,
+                            To = me
+                        });
+                }
+            }
+
             return me;
         }
 
@@ -40,10 +99,10 @@ namespace Crosstalk.Services
         {
             var me = new Identity()
                 {
-                    Id = ObjectId.GenerateNewId(),
+                    OId = ObjectId.GenerateNewId(),
                     Name = name
                 };
-            me.GraphId = this._client.Create<Identity>(me).Id;
+            me.GraphId = this._client.Create(me.ToGraphIdentity()).Id;
             this._identityRepository.Save(me);
             this._edgeRepository
                 .Save(new Edge()

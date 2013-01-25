@@ -9,6 +9,7 @@ namespace Crosstalk.Repositories
     public abstract class BaseNeo4JRepository
     {
         private readonly GraphClient _client;
+        private bool _isConnected = false; 
 
         protected BaseNeo4JRepository(GraphClient client)
         {
@@ -17,8 +18,17 @@ namespace Crosstalk.Repositories
 
         protected GraphClient GetClient()
         {
-            this._client.Connect();
+            if (!this._isConnected)
+            {
+                this._client.Connect();
+                this._isConnected = true;
+            }
             return this._client;
+        }
+
+        protected GraphClient Client
+        {
+            get { return this.GetClient(); }
         }
     }
 }

@@ -8,7 +8,6 @@ namespace Crosstalk.Models
 {
     public class Edge
     {
-        [BsonId]
         public long Id { get; set; }
         [BsonIgnore]
         public Identity From;
