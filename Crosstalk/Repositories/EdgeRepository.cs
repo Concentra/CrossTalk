@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Crosstalk.Enums;
-using Crosstalk.Models;
-using Crosstalk.Relationships;
+using Crosstalk.Core.Enums;
+using Crosstalk.Core.Models;
+using Crosstalk.Core.Relationships;
 using MongoDB.Bson;
 using Neo4jClient;
 using Neo4jClient.Gremlin;
-using Newtonsoft.Json.Linq;
 
-namespace Crosstalk.Repositories
+namespace Crosstalk.Core.Repositories
 {
     public class EdgeRepository : BaseNeo4JRepository, IEdgeRepository
     {

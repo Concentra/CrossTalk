@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Crosstalk.Enums;
-using Crosstalk.Models;
+﻿using Crosstalk.Core.Enums;
+using Crosstalk.Core.Models;
 using Neo4jClient;
 
-namespace Crosstalk.Relationships
+namespace Crosstalk.Core.Relationships
 {
     public class Broadcast :
         Relationship,

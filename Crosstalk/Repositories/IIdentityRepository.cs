@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Crosstalk.Models;
+﻿using System.Collections.Generic;
+using Crosstalk.Core.Models;
 using MongoDB.Bson;
 
-namespace Crosstalk.Repositories
+namespace Crosstalk.Core.Repositories
 {
     public interface IIdentityRepository
     {

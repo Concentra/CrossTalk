@@ -1,9 +1,9 @@
-﻿using Crosstalk.Models.Convertors;
+﻿using Crosstalk.Core.Models.Convertors;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace Crosstalk.Models
+namespace Crosstalk.Core.Models
 {
     public class Message
     {

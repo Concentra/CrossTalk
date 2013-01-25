@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
-using Crosstalk.Exceptions;
-using Crosstalk.Models;
-using Crosstalk.Repositories;
+using Crosstalk.Core.Exceptions;
+using Crosstalk.Core.Models;
+using Crosstalk.Core.Repositories;
 using MongoDB.Bson;
 
-namespace Crosstalk.Controllers
+namespace Crosstalk.Core.Controllers
 {
     public class MessagesController : ApiController
     {

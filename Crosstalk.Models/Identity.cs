@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Crosstalk.Models.Convertors;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
-namespace Crosstalk.Models
+namespace Crosstalk.Core.Models
 {
     public class Identity
     {
@@ -35,7 +31,7 @@ namespace Crosstalk.Models
         public string AvatarUrl { get; set; }
         public string Type { get; set; }
 
-        public Dictionary<string, string> Data { get; set; }
+        public Dictionary<string, dynamic> Data { get; set; }
 
         [JsonIgnore]
         public long GraphId { get; set; }

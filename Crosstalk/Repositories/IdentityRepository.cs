@@ -1,15 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web.Configuration;
-using Crosstalk.Exceptions;
-using Crosstalk.Models;
+using Crosstalk.Core.Exceptions;
+using Crosstalk.Core.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
-namespace Crosstalk.Repositories
+namespace Crosstalk.Core.Repositories
 {
     public class IdentityRepository : BaseMongoRepository<Identity>, IIdentityRepository
     {

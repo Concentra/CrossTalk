@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using Crosstalk.Core.Models;
 using MongoDB.Driver;
-using MongoDB.Driver.Builders;
 using MongoDB.Driver.Linq;
 using MongoDB.Bson;
-using Crosstalk.Models;
 
-namespace Crosstalk.Repositories
+namespace Crosstalk.Core.Repositories
 {
     public class MessageRepository : BaseMongoRepository<Message>, IMessageRepository
     {

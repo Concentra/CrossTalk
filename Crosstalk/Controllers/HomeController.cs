@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Crosstalk.App_Start;
-using Crosstalk.Models;
-using Crosstalk.Repositories;
-using Crosstalk.Services;
+﻿using System.Web.Mvc;
+using Crosstalk.Core.App_Start;
+using Crosstalk.Core.Models;
+using Crosstalk.Core.Repositories;
+using Crosstalk.Core.Services;
 using MongoDB.Bson;
-using Neo4jClient;
 
-namespace Crosstalk.Controllers
+namespace Crosstalk.Core.Controllers
 {
     public class HomeController : Controller
     {

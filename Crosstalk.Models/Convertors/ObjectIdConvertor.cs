@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Crosstalk.Models.Convertors
+namespace Crosstalk.Core.Models.Convertors
 {
     public class ObjectIdConvertor : JsonConverter
     {

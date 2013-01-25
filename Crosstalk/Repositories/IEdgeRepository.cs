@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Crosstalk.Models;
+﻿using System.Collections.Generic;
+using Crosstalk.Core.Models;
 
-namespace Crosstalk.Repositories
+namespace Crosstalk.Core.Repositories
 {
     public interface IEdgeRepository
     {

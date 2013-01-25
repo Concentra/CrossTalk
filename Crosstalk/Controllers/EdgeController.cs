@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
-using Crosstalk.Models;
-using Crosstalk.Repositories;
+using Crosstalk.Core.Models;
+using Crosstalk.Core.Repositories;
 
-namespace Crosstalk.Controllers
+namespace Crosstalk.Core.Controllers
 {
     public class EdgeController : ApiController
     {

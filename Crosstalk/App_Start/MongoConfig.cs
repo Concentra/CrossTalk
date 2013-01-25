@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Web;
+﻿using System.Configuration;
 using MongoDB.Driver;
 
-namespace Crosstalk.App_Start
+namespace Crosstalk.Core.App_Start
 {
     public class MongoConfig
     {

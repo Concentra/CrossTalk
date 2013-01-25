@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 
-namespace Crosstalk.Repositories
+namespace Crosstalk.Core.Repositories
 {
     public abstract class BaseMongoRepository<TDocument>
     {

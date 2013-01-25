@@ -5,7 +5,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crosstalk.Core", "Crosstalk
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebUI", "WebUI\WebUI.csproj", "{BD8D7C7A-EAC3-4F5E-A540-E17816250546}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crosstalk.Models", "Crosstalk.Models\Crosstalk.Models.csproj", "{D53A64A6-A8E1-43A5-A14E-5E03FDC29B97}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crosstalk.Core.Models", "Crosstalk.Models\Crosstalk.Core.Models.csproj", "{D53A64A6-A8E1-43A5-A14E-5E03FDC29B97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crosstalk.Domain.Models", "Crosstalk.DomainModels\Crosstalk.Domain.Models.csproj", "{34705510-F234-4126-B7FE-E33067CC95E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crosstalk.Domain", "Crosstalk.Domain\Crosstalk.Domain.csproj", "{A668E211-6172-41C8-91E3-D1A206A15C3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +29,14 @@ Global
 		{D53A64A6-A8E1-43A5-A14E-5E03FDC29B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D53A64A6-A8E1-43A5-A14E-5E03FDC29B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D53A64A6-A8E1-43A5-A14E-5E03FDC29B97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34705510-F234-4126-B7FE-E33067CC95E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34705510-F234-4126-B7FE-E33067CC95E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34705510-F234-4126-B7FE-E33067CC95E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34705510-F234-4126-B7FE-E33067CC95E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A668E211-6172-41C8-91E3-D1A206A15C3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A668E211-6172-41C8-91E3-D1A206A15C3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A668E211-6172-41C8-91E3-D1A206A15C3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A668E211-6172-41C8-91E3-D1A206A15C3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using Crosstalk.Models;
-using MongoDB.Bson;
+using Crosstalk.Core.Models;
 
-namespace Crosstalk.Repositories
+namespace Crosstalk.Core.Repositories
 {
     public interface IMessageRepository
     {

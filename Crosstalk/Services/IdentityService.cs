@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Crosstalk.Models;
-using Crosstalk.Repositories;
+﻿using System.Collections.Generic;
+using Crosstalk.Core.Models;
+using Crosstalk.Core.Repositories;
 using MongoDB.Bson;
 using Neo4jClient;
 
-namespace Crosstalk.Services
+namespace Crosstalk.Core.Services
 {
     public class IdentityService
     {

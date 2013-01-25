@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Crosstalk.Models
+﻿namespace Crosstalk.Core.Models
 {
     public class GraphIdentity
     {

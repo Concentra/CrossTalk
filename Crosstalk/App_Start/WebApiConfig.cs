@@ -4,11 +4,10 @@ using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
-using Crosstalk.App_Start;
-using Crosstalk.Handlers;
-using Crosstalk.Repositories;
+using Crosstalk.Core.Handlers;
+using Crosstalk.Core.Repositories;
 
-namespace Crosstalk
+namespace Crosstalk.Core.App_Start
 {
     public static class WebApiConfig
     {
