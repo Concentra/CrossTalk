@@ -11,7 +11,7 @@ namespace Crosstalk.Core.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            return new HttpNotFoundResult();
         }
 
         public ActionResult Bootstrap()

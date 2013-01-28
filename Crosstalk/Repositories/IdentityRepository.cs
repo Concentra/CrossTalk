@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Crosstalk.Core.Exceptions;
@@ -70,6 +71,11 @@ namespace Crosstalk.Core.Repositories
                 property.SetValue(item, this.GetById(((Identity)property.GetValue(item)).Id));
             }
             return item;
+        }
+
+        public IEnumerable<Identity> Filter(Func<Identity, bool> selector)
+        {
+            return this.GetCollection().AsQueryable().Where(selector);
         }
     }
 }

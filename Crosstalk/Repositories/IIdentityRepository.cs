@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Crosstalk.Core.Models;
 using MongoDB.Bson;
 
@@ -11,5 +12,6 @@ namespace Crosstalk.Core.Repositories
         Identity GetById(ObjectId id);
         IEnumerable<TItem> BindPartials<TItem>(IEnumerable<TItem> items, IEnumerable<string> fields);
         TItem BindPartial<TItem>(TItem item, IEnumerable<string> fields);
+        IEnumerable<Identity> Filter(Func<Identity, bool> selector);
     }
 }
