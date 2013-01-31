@@ -1,8 +1,15 @@
-﻿using MongoDB.Driver;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
+using MongoDB.Driver.Wrappers;
+using Newtonsoft.Json;
 
 namespace Crosstalk.Core.Repositories
 {
-    public abstract class BaseMongoRepository<TDocument>
+    public abstract class BaseMongoRepository<TDocument>: IMongoRepository<TDocument>
     {
         private readonly MongoDatabase _database;
 
@@ -14,6 +21,26 @@ namespace Crosstalk.Core.Repositories
         protected MongoCollection<TDocument> GetCollection()
         {
             return this._database.GetCollection<TDocument>(this.Collection);
+        }
+
+        public bool Insert(TDocument document)
+        {
+            return this.GetCollection().Insert(document).Ok;
+        }
+
+        public IEnumerable<TDocument> Where(Func<TDocument, bool> predicate)
+        {
+            return this.GetCollection().AsQueryable().Where(predicate);
+        }
+
+        public IEnumerable<object> Select(Func<TDocument, object> projection)
+        {
+            return this.GetCollection().AsQueryable().Select(projection);
+        }
+
+        public bool Delete(TDocument document)
+        {
+            return this.GetCollection().Remove(new QueryWrapper(document)).Ok;
         }
 
         protected abstract string Collection { get; }

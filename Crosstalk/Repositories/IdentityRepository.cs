@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Crosstalk.Common.Models;
 using Crosstalk.Core.Exceptions;
 using Crosstalk.Core.Models;
 using MongoDB.Bson;
@@ -27,6 +28,7 @@ namespace Crosstalk.Core.Repositories
             {
                 identity.OId = ObjectId.GenerateNewId();
             }
+            identity.Others = identity.GetDataAsDocument();
             if (!this.GetCollection().Insert(identity).Ok)
             {
                 throw new IOException("Could not save identity");

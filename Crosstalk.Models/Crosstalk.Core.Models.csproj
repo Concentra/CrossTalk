@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Convertors\NestedDictionaryConvertor.cs" />
     <Compile Include="Convertors\ObjectIdConvertor.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="FlatMessage.cs" />
@@ -58,6 +59,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Crosstalk.Common\Crosstalk.Common.csproj">
+      <Project>{5653A55C-A114-46C4-90E4-EA1FEEA0211A}</Project>
+      <Name>Crosstalk.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
