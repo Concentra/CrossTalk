@@ -4,11 +4,22 @@ using Crosstalk.Core.Models;
 using Crosstalk.Core.Repositories;
 using Crosstalk.Core.Services;
 using MongoDB.Bson;
+using MongoDB.Driver;
+using Neo4jClient;
 
 namespace Crosstalk.Core.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly MongoDatabase _database;
+        private readonly IGraphClient _graphClient;
+
+        public HomeController()
+        {
+            this._database = DependencyResolver.Current.GetService<MongoDatabase>();
+            this._graphClient = DependencyResolver.Current.GetService<IGraphClient>();
+        }
+
         public ActionResult Index()
         {
             return new HttpNotFoundResult();
@@ -16,18 +27,15 @@ namespace Crosstalk.Core.Controllers
 
         public ActionResult Bootstrap()
         {
-            var mClient = MongoConfig.GetDb();
-            mClient.GetCollection("indentity").RemoveAll();
-            mClient.GetCollection("messages").RemoveAll();
+            _database.GetCollection("indentity").RemoveAll();
+            _database.GetCollection("messages").RemoveAll();
 
-            var gClient = Neo4JConfig.GetClient();
-            gClient.Connect();
-            gClient.ExecuteScalarGremlin("g.V.each{g.removeVertex(it)}", null);
+            _graphClient.ExecuteScalarGremlin("g.V.each{g.removeVertex(it)}", null);
 
-            var idSrv = new IdentityService(
-                new IdentityRepository(MongoConfig.GetDb()),
-                new EdgeRepository(gClient),
-                gClient
+            var idSrv = new BootstrapService(
+                new IdentityRepository(_database),
+                new EdgeRepository(_graphClient),
+                (GraphClient) _graphClient
                 );
             // Create some identities
             var root = idSrv.CreatePublic();
@@ -56,9 +64,7 @@ namespace Crosstalk.Core.Controllers
 
         public ActionResult Dump()
         {
-            var gClient = Neo4JConfig.GetClient();
-            gClient.Connect();
-            return new ContentResult {Content = gClient.ExecuteScalarGremlin("g.V.Id", null).ToJson()};
+            return new ContentResult {Content = _graphClient.ExecuteScalarGremlin("g.V.Id", null).ToJson()};
         }
     }
 }

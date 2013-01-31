@@ -6,14 +6,14 @@ using Neo4jClient;
 
 namespace Crosstalk.Core.Services
 {
-    public class IdentityService
+    public class BootstrapService
     {
         private readonly IIdentityRepository _identityRepository;
         private readonly IEdgeRepository _edgeRepository;
 
         private readonly GraphClient _client;
 
-        public IdentityService(IIdentityRepository identityRepository, IEdgeRepository edgeRepository, GraphClient client)
+        public BootstrapService(IIdentityRepository identityRepository, IEdgeRepository edgeRepository, GraphClient client)
         {
             this._edgeRepository = edgeRepository;
             this._identityRepository = identityRepository;

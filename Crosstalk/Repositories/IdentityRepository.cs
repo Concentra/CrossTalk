@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Crosstalk.Common.Models;
+using Crosstalk.Common.Repositories;
 using Crosstalk.Core.Exceptions;
 using Crosstalk.Core.Models;
 using MongoDB.Bson;

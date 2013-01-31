@@ -1,43 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using Autofac;
 using Crosstalk.Core.Models;
 using Crosstalk.Core.Repositories;
 using MongoDB.Bson;
+using Neo4jClient;
 
 namespace Crosstalk.Core.Controllers
 {
     public class IdentityController : ApiController
     {
-        private readonly IIdentityRepository _repository;
+        private readonly IIdentityRepository _identityRepository;
+        private readonly IGraphClient _graphClient;
 
-        public IdentityController(IIdentityRepository repository)
+        public IdentityController(IIdentityRepository identityRepository, IGraphClient graphClient)
         {
-            this._repository = repository;
+            this._identityRepository = identityRepository;
+            this._graphClient = graphClient;
         }
 
         public Identity GetById(string id)
         {
-            return this._repository.GetById(id);
+            return this._identityRepository.GetById(id);
         }
 
         [HttpGet]
         public IEnumerable<Identity> Search(string field, string value)
         {
-            return this._repository.Filter(s => true);
-            //return this._repository.Filter(i => null != i.Data && i.Data.Contains(field) && value == i.Data.GetValue(field));
+            return this._identityRepository.Filter(i =>
+                {
+                    if (null != i.Others && i.Others.Contains(field))
+                    {
+                        if (i.Others[field].IsBsonArray)
+                        {
+                            return -1 < i.Others[field].AsBsonArray.IndexOf(BsonDocument.Parse(value));
+                        }
+                        return i.Others[field].AsBsonDocument.ContainsValue(BsonDocument.Parse(value));
+                    }
+                    return false;
+                });
         }
 
         public Identity Post([FromBody] Identity model)
         {
             model.OId = ObjectId.GenerateNewId();
-            this._repository.Save(model);
+            model.GraphId = this._graphClient.Create(model.ToGraphIdentity()).Id;
+            this._identityRepository.Save(model);
             return model;
         }
 
         public Identity Post(string id, [FromBody] Dictionary<string, object> model)
         {
-            var identity = this._repository.GetById(id);
+            var identity = this._identityRepository.GetById(id);
             var type = identity.GetType();
             foreach (var kv in model)
             {
@@ -47,7 +62,7 @@ namespace Crosstalk.Core.Controllers
                     field.SetValue(identity, kv.Value);
                 }
             }
-            this._repository.Save(identity);
+            this._identityRepository.Save(identity);
             return identity;
         }
 

@@ -84,6 +84,10 @@ namespace Crosstalk.Core.Models
         public BsonDocument GetDataAsDocument()
         {
             var result = new BsonDocument();
+            if (null == this.Data)
+            {
+                return result;
+            }
             foreach (var kv in this.Data)
             {
                 if (kv.Value is JArray)

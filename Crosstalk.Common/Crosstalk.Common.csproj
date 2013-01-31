@@ -33,6 +33,9 @@
     <Reference Include="MongoDB.Bson">
       <HintPath>..\Crosstalk\bin\MongoDB.Bson.dll</HintPath>
     </Reference>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\Crosstalk\bin\MongoDB.Driver.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
@@ -49,6 +52,8 @@
     <Compile Include="Client\IApiClient.cs" />
     <Compile Include="Exceptions\HttpInternalServerErrorException.cs" />
     <Compile Include="Exceptions\HttpNotFoundException.cs" />
+    <Compile Include="Repositories\BaseMongoRepository.cs" />
+    <Compile Include="Repositories\IMongoRepository.cs" />
     <Compile Include="Models\IIdentity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

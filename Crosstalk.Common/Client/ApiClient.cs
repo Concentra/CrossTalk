@@ -36,6 +36,11 @@ namespace Crosstalk.Common.Client
             return result.Content.ReadAsAsync<TModel>().Result;
         }
 
+        public HttpResponseMessage RawGet(string url)
+        {
+            return this._client.GetAsync(url).Result;
+        }
+
         public async Task<TModel> PostAsync<TModel>(string url, TModel data)
         {
             return await this._client.PostAsJsonAsync(url, data).ContinueWith((t) =>
@@ -50,6 +55,11 @@ namespace Crosstalk.Common.Client
             var req = this._client.PostAsJsonAsync(url, data);
             this.EnsureSuccessStatusCode(req.Result);
             return req.Result;
+        }
+
+        public HttpResponseMessage RawPost(string url, HttpContent content)
+        {
+            return this._client.PostAsync(url, content).Result;
         }
 
         private void EnsureSuccessStatusCode(HttpResponseMessage response)

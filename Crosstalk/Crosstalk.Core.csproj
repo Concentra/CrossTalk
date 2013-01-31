@@ -145,8 +145,6 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\MongoConfig.cs" />
-    <Compile Include="App_Start\Neo4JConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\EdgeController.cs" />
@@ -169,11 +167,9 @@
     <Compile Include="Repositories\IEdgeRepository.cs" />
     <Compile Include="Repositories\IIdentityRepository.cs" />
     <Compile Include="Repositories\IMessageRepository.cs" />
-    <Compile Include="Repositories\IMongoRepository.cs" />
     <Compile Include="Repositories\MessageRepository.cs" />
-    <Compile Include="Repositories\BaseMongoRepository.cs" />
     <Compile Include="Serializers\IdentitySerializer.cs" />
-    <Compile Include="Services\IdentityService.cs" />
+    <Compile Include="Services\BootstrapService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

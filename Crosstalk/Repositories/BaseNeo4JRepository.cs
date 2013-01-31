@@ -4,19 +4,19 @@ namespace Crosstalk.Core.Repositories
 {
     public abstract class BaseNeo4JRepository
     {
-        private readonly GraphClient _client;
+        private readonly IGraphClient _client;
         private bool _isConnected = false; 
 
-        protected BaseNeo4JRepository(GraphClient client)
+        protected BaseNeo4JRepository(IGraphClient client)
         {
             this._client = client;
         }
 
-        protected GraphClient GetClient()
+        private IGraphClient GetClient()
         {
             if (!this._isConnected)
             {
-                this._client.Connect();
+                ((GraphClient) this._client).Connect();
                 this._isConnected = true;
             }
             return this._client;
@@ -24,7 +24,7 @@ namespace Crosstalk.Core.Repositories
 
         protected GraphClient Client
         {
-            get { return this.GetClient(); }
+            get { return (GraphClient) this.GetClient(); }
         }
     }
 }

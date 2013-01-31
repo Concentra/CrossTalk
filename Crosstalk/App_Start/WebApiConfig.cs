@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Configuration;
+using System.Reflection;
 using System.Web.Http;
 using System.Web.Mvc;
 using Autofac;
@@ -6,6 +8,8 @@ using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
 using Crosstalk.Core.Handlers;
 using Crosstalk.Core.Repositories;
+using MongoDB.Driver;
+using Neo4jClient;
 
 namespace Crosstalk.Core.App_Start
 {
@@ -29,9 +33,29 @@ namespace Crosstalk.Core.App_Start
 
             var builder = new ContainerBuilder();
 
-            builder.RegisterInstance<IMessageRepository>(new MessageRepository(MongoConfig.GetDb()));
-            builder.RegisterInstance<IEdgeRepository>(new EdgeRepository(Neo4JConfig.GetClient()));
-            builder.RegisterInstance<IIdentityRepository>(new IdentityRepository(MongoConfig.GetDb()));
+            builder.RegisterInstance(((Func<MongoDatabase>)(() =>
+            {
+                var parts = ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString.Split('/');
+                if (parts.Length < 2)
+                {
+                    throw new ConfigurationErrorsException("The connection string for MongoDB is incorrectly formatted, it should be: \"host:port/database\"");
+                }
+                var server = (new MongoClient("mongodb://" + parts[0])).GetServer();
+                return server.GetDatabase(parts[1]);
+            }))());
+
+            builder.RegisterInstance(((Func<IGraphClient>) (() =>
+                {
+                    var client =
+                        new GraphClient(new Uri(ConfigurationManager.ConnectionStrings["Neo4J"].ConnectionString), false,
+                                        false);
+                    client.Connect();
+                    return client;
+                }))());
+
+            builder.Register<IMessageRepository>(c => new MessageRepository(c.Resolve<MongoDatabase>()));
+            builder.Register<IEdgeRepository>(c => new EdgeRepository(c.Resolve<IGraphClient>()));
+            builder.Register<IIdentityRepository>(c => new IdentityRepository(c.Resolve<MongoDatabase>()));
 
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
                    .Where(t => !t.IsAbstract && typeof(ApiController).IsAssignableFrom(t))
