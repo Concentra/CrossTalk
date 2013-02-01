@@ -29,6 +29,7 @@ namespace Crosstalk.Core.Controllers
         [HttpGet]
         public IEnumerable<Identity> Search(string field, string value)
         {
+            // TODO: Optimise, we can provide the query directly to mongo as a json object
             return this._identityRepository.Filter(i =>
                 {
                     if (null != i.Others && i.Others.Contains(field))

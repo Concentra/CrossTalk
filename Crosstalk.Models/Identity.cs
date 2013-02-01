@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Xml.Serialization;
 using Crosstalk.Common.Models;
-using Crosstalk.Core.Models.Convertors;
 using MongoDB.Bson;
-using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.IdGenerators;
-using MongoDB.Bson.Serialization.Options;
-using MongoDB.Bson.Serialization.Serializers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using JsonReader = Newtonsoft.Json.JsonReader;
@@ -20,7 +12,6 @@ using JsonWriter = Newtonsoft.Json.JsonWriter;
 
 namespace Crosstalk.Core.Models
 {
-    //[BsonSerializer(typeof(IdentitySerializer))]
     [JsonConverter(typeof(IdentityConvertor))]
     public class Identity : IIdentity<Dictionary<string, object>>
     {
@@ -52,30 +43,6 @@ namespace Crosstalk.Core.Models
 
         [BsonIgnore]
         public Dictionary<string, object> Data { get; set; }
-
-        //get
-        //    {
-        //        return null == this.Others ? null : this.Others.ToDictionary();
-        //    }
-        //    set
-        //    {
-        //        this.Others = new BsonDocument();
-        //        foreach (var kv in value)
-        //        {
-        //            if (kv.Value is JArray)
-        //            {
-        //                var inner = new BsonArray();
-        //                foreach (var item in (kv.Value as JArray))
-        //                {
-        //                    var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(item.ToString());
-        //                    var target = new BsonDocument(dict);
-        //                    inner.Add(target);
-        //                }
-        //                this.Others.Add(kv.Key, inner);
-        //            }   
-        //        }
-        //    }
-        //}
 
         [JsonIgnore]
         public long GraphId { get; set; }
@@ -182,81 +149,4 @@ namespace Crosstalk.Core.Models
             return typeof(Identity).IsAssignableFrom(objectType);
         }
     }
-
-    //public class IdentitySerializer : DictionarySerializer, IBsonDocumentSerializer, IBsonIdProvider
-    //{
-    //    public new object Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public new object Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
-    //    {
-    //        if (typeof (Identity) != nominalType)
-    //        {
-    //            throw new ArgumentException(string.Format("{0} is not a valid Identity type", nominalType.ToString()), "nominalType");
-    //        }
-    //        var doc = BsonSerializer.Deserialize<IDictionary<string, object>>(bsonReader);
-    //        var result = new Identity();
-    //        foreach (var kv in doc)
-    //        {
-    //            var field = nominalType.GetField(kv.Key);
-    //            if (null != field)
-    //            {
-    //                field.SetValue(result, kv.Value);
-    //            }
-    //            else
-    //            {
-    //                result.Data[kv.Key] = kv.Value;
-    //            }
-    //        }
-    //        return result;
-    //    }
-
-    //    public void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
-    //    {
-    //        if (value.GetType() != nominalType || typeof(Identity) != nominalType)
-    //        {
-    //            throw new ArgumentException("Invalid argument types");
-    //        }
-    //        (value as Identity).Others = (value as Identity).GetDataAsDocument();
-    //        base.Serialize(bsonWriter, nominalType, value, options);
-    //    }
-
-    //    public BsonSerializationInfo GetMemberSerializationInfo(string memberName)
-    //    {
-    //        var field = typeof (Identity).GetField(memberName);
-    //        if (field == null)
-    //        {
-    //            return new BsonSerializationInfo(memberName, this, typeof(object), new DictionarySerializationOptions());
-    //        }
-    //        var representations =
-    //            field.GetCustomAttributes(typeof (BsonRepresentationAttribute), false)
-    //                 .Cast<BsonRepresentationAttribute>();
-    //        IBsonSerializationOptions opt;
-    //        var representationAttrs = representations as IList<BsonRepresentationAttribute> ?? representations.ToList();
-    //        if (representationAttrs.Any())
-    //        {
-    //            opt = new RepresentationSerializationOptions(representationAttrs.First().Representation);
-    //        }
-    //        else
-    //        {
-    //            opt = new RepresentationSerializationOptions(BsonType.String);
-    //        }
-    //        return new BsonSerializationInfo(memberName, this, field.GetType(), opt);
-    //    }
-
-    //    public bool GetDocumentId(object document, out object id, out Type idNominalType, out IIdGenerator idGenerator)
-    //    {
-    //        id = (document as Identity).OId;
-    //        idNominalType = typeof (ObjectId);
-    //        idGenerator = new ObjectIdGenerator();
-    //        return true;
-    //    }
-
-    //    public void SetDocumentId(object document, object id)
-    //    {
-    //        (document as Identity).OId = (ObjectId) id;
-    //    }
-    //}
 }
