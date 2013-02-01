@@ -22,7 +22,8 @@ namespace Crosstalk.Core.Controllers
 
         public Identity GetById(string id)
         {
-            return this._identityRepository.GetById(id);
+            var identity = this._identityRepository.GetById(id);
+            return identity;
         }
 
         [HttpGet]
