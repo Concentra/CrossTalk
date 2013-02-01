@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -14,10 +15,13 @@ using MongoDB.Bson.Serialization.Options;
 using MongoDB.Bson.Serialization.Serializers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using JsonReader = Newtonsoft.Json.JsonReader;
+using JsonWriter = Newtonsoft.Json.JsonWriter;
 
 namespace Crosstalk.Core.Models
 {
     //[BsonSerializer(typeof(IdentitySerializer))]
+    [JsonConverter(typeof(IdentityConvertor))]
     public class Identity : IIdentity<Dictionary<string, object>>
     {
         public const string Public = "public";
@@ -114,15 +118,16 @@ namespace Crosstalk.Core.Models
             return result;
         }
 
-        public Dictionary<string, object> SetDataFromDocument(BsonDocument doc)
+        public Dictionary<string, object> GetDictionaryFromDocument()
         {
+            var doc = this.Others ?? new BsonDocument();
             var result = new Dictionary<string, object>();
             foreach (var element in doc)
             {
                 object obj;
                 if (element.Value.IsBsonArray)
                 {
-                    obj = BsonSerializer.Deserialize<IEnumerable<object>>(element.Value.ToJson());
+                    obj = JArray.Parse(element.Value.ToJson());
                 } else if (element.Value.IsBsonDocument)
                 {
                     obj = BsonSerializer.Deserialize<Dictionary<string, string>>(element.Value.ToJson());
@@ -137,80 +142,121 @@ namespace Crosstalk.Core.Models
         }
     }
 
-    public class IdentitySerializer : ObjectSerializer, IBsonDocumentSerializer, IBsonIdProvider
+    public class IdentityConvertor : JsonConverter
     {
-        public new object Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+        private bool _canWrite = true;
+
+        public override bool CanWrite
         {
-            throw new NotImplementedException();
+            get
+            {
+                return this._canWrite;
+            }
         }
 
-        public new object Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if (typeof (Identity) != nominalType)
+            if (!(value is Identity))
             {
-                throw new ArgumentException(string.Format("{0} is not a valid Identity type", nominalType.ToString()), "nominalType");
+                throw new ArgumentException("value is not Identity", "value");
             }
-            var doc = BsonSerializer.Deserialize<IDictionary<string, object>>(bsonReader);
-            var result = new Identity();
-            foreach (var kv in doc)
-            {
-                var field = nominalType.GetField(kv.Key);
-                if (null != field)
-                {
-                    field.SetValue(result, kv.Value);
-                }
-                else
-                {
-                    result.Data[kv.Key] = kv.Value;
-                }
-            }
-            return result;
+            var target = (Identity) value;
+            target.Data = target.GetDictionaryFromDocument();
+            serializer.Converters.Remove(this);
+            this._canWrite = false;
+            serializer.Serialize(writer, target);
+            this._canWrite = true;
         }
 
-        public void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (value.GetType() != nominalType || typeof(Identity) != nominalType)
-            {
-                throw new ArgumentException("Invalid argument types");
-            }
-            (value as Identity).Others = (value as Identity).GetDataAsDocument();
-            base.Serialize(bsonWriter, nominalType, value, options);
+            var obj = JObject.Load(reader);
+            var target = new Identity();
+            serializer.Populate(obj.CreateReader(), target);
+            target.Others = target.GetDataAsDocument();
+            return target;
         }
 
-        public BsonSerializationInfo GetMemberSerializationInfo(string memberName)
+        public override bool CanConvert(Type objectType)
         {
-            var field = typeof (Identity).GetField(memberName);
-            if (field == null)
-            {
-                return new BsonSerializationInfo(memberName, this, typeof(object), new DictionarySerializationOptions());
-            }
-            var representations =
-                field.GetCustomAttributes(typeof (BsonRepresentationAttribute), false)
-                     .Cast<BsonRepresentationAttribute>();
-            IBsonSerializationOptions opt;
-            var representationAttrs = representations as IList<BsonRepresentationAttribute> ?? representations.ToList();
-            if (representationAttrs.Any())
-            {
-                opt = new RepresentationSerializationOptions(representationAttrs.First().Representation);
-            }
-            //else if (field.GetType().)
-            //{
-            //    opt =;
-            //}
-            return new BsonSerializationInfo(memberName, this, field.GetType(), new RepresentationSerializationOptions(field.GetCustomAttributes(typeof(BsonRepresentationAttribute),false).Cast<BsonRepresentationAttribute>().First().Representation));
-        }
-
-        public bool GetDocumentId(object document, out object id, out Type idNominalType, out IIdGenerator idGenerator)
-        {
-            id = (document as Identity).OId;
-            idNominalType = typeof (ObjectId);
-            idGenerator = new ObjectIdGenerator();
-            return true;
-        }
-
-        public void SetDocumentId(object document, object id)
-        {
-            (document as Identity).OId = (ObjectId) id;
+            return typeof(Identity).IsAssignableFrom(objectType);
         }
     }
+
+    //public class IdentitySerializer : DictionarySerializer, IBsonDocumentSerializer, IBsonIdProvider
+    //{
+    //    public new object Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public new object Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+    //    {
+    //        if (typeof (Identity) != nominalType)
+    //        {
+    //            throw new ArgumentException(string.Format("{0} is not a valid Identity type", nominalType.ToString()), "nominalType");
+    //        }
+    //        var doc = BsonSerializer.Deserialize<IDictionary<string, object>>(bsonReader);
+    //        var result = new Identity();
+    //        foreach (var kv in doc)
+    //        {
+    //            var field = nominalType.GetField(kv.Key);
+    //            if (null != field)
+    //            {
+    //                field.SetValue(result, kv.Value);
+    //            }
+    //            else
+    //            {
+    //                result.Data[kv.Key] = kv.Value;
+    //            }
+    //        }
+    //        return result;
+    //    }
+
+    //    public void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
+    //    {
+    //        if (value.GetType() != nominalType || typeof(Identity) != nominalType)
+    //        {
+    //            throw new ArgumentException("Invalid argument types");
+    //        }
+    //        (value as Identity).Others = (value as Identity).GetDataAsDocument();
+    //        base.Serialize(bsonWriter, nominalType, value, options);
+    //    }
+
+    //    public BsonSerializationInfo GetMemberSerializationInfo(string memberName)
+    //    {
+    //        var field = typeof (Identity).GetField(memberName);
+    //        if (field == null)
+    //        {
+    //            return new BsonSerializationInfo(memberName, this, typeof(object), new DictionarySerializationOptions());
+    //        }
+    //        var representations =
+    //            field.GetCustomAttributes(typeof (BsonRepresentationAttribute), false)
+    //                 .Cast<BsonRepresentationAttribute>();
+    //        IBsonSerializationOptions opt;
+    //        var representationAttrs = representations as IList<BsonRepresentationAttribute> ?? representations.ToList();
+    //        if (representationAttrs.Any())
+    //        {
+    //            opt = new RepresentationSerializationOptions(representationAttrs.First().Representation);
+    //        }
+    //        else
+    //        {
+    //            opt = new RepresentationSerializationOptions(BsonType.String);
+    //        }
+    //        return new BsonSerializationInfo(memberName, this, field.GetType(), opt);
+    //    }
+
+    //    public bool GetDocumentId(object document, out object id, out Type idNominalType, out IIdGenerator idGenerator)
+    //    {
+    //        id = (document as Identity).OId;
+    //        idNominalType = typeof (ObjectId);
+    //        idGenerator = new ObjectIdGenerator();
+    //        return true;
+    //    }
+
+    //    public void SetDocumentId(object document, object id)
+    //    {
+    //        (document as Identity).OId = (ObjectId) id;
+    //    }
+    //}
 }
