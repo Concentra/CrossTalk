@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Crosstalk.Common.Models;
+using Crosstalk.Core.Models.Convertors;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Crosstalk.Core.Models
 {
-    public class Identity
+    public class Identity : IIdentity<Dictionary<string, object>>
     {
         public const string Public = "public";
         public const string Group = "group";
@@ -23,23 +27,46 @@ namespace Crosstalk.Core.Models
         [JsonIgnore]
         public ObjectId OId
         {
-            get { return ObjectId.Parse(this.Id); }
+            get {
+                ObjectId oid;
+                return ObjectId.TryParse(this.Id, out oid) ? oid : ObjectId.Empty;
+            }
             set { this.Id = value.ToString(); }
         }
 
         public string Name { get; set; }
         public string AvatarUrl { get; set; }
-        public string Type { get; set; }
+        public string Type { get; set; }        
 
-        public Dictionary<string, dynamic> Data { get; set; }
+        [BsonIgnore]
+        public Dictionary<string, object> Data { get; set; }
+
+        //get
+        //    {
+        //        return null == this.Others ? null : this.Others.ToDictionary();
+        //    }
+        //    set
+        //    {
+        //        this.Others = new BsonDocument();
+        //        foreach (var kv in value)
+        //        {
+        //            if (kv.Value is JArray)
+        //            {
+        //                var inner = new BsonArray();
+        //                foreach (var item in (kv.Value as JArray))
+        //                {
+        //                    var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(item.ToString());
+        //                    var target = new BsonDocument(dict);
+        //                    inner.Add(target);
+        //                }
+        //                this.Others.Add(kv.Key, inner);
+        //            }   
+        //        }
+        //    }
+        //}
 
         [JsonIgnore]
         public long GraphId { get; set; }
-
-        public bool HasId()
-        {
-            return ObjectId.Parse(this.Id) != ObjectId.Empty;
-        }
 
         public GraphIdentity ToGraphIdentity()
         {
@@ -48,6 +75,34 @@ namespace Crosstalk.Core.Models
                     Id = this.Id,
                     Type = this.Type
                 };
+        }
+
+        [BsonExtraElements]
+        [JsonIgnore]
+        public BsonDocument Others { get; set; }
+
+        public BsonDocument GetDataAsDocument()
+        {
+            var result = new BsonDocument();
+            if (null == this.Data)
+            {
+                return result;
+            }
+            foreach (var kv in this.Data)
+            {
+                if (kv.Value is JArray)
+                {
+                    var inner = new BsonArray();
+                    foreach (var item in (kv.Value as JArray))
+                    {
+                        var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(item.ToString());
+                        var target = new BsonDocument(dict);
+                        inner.Add(target);
+                    }
+                    result.Add(kv.Key, inner);
+                }
+            }
+            return result;
         }
 
     }

@@ -14,17 +14,17 @@ namespace Crosstalk.Core.Repositories
         public const string Broadcast = "broadcast";
         public const string Private = "private";
 
-        public EdgeRepository(GraphClient client) : base(client) {}
+        public EdgeRepository(IGraphClient client) : base(client) {}
 
         public IEdgeRepository Save(Edge edge)
         {
-            this.GetClient().CreateRelationship<GraphIdentity, Broadcast>((NodeReference<GraphIdentity>) edge.From.GraphId, new Broadcast((NodeReference) edge.To.GraphId));
+            this.Client.CreateRelationship<GraphIdentity, Broadcast>((NodeReference<GraphIdentity>) edge.From.GraphId, new Broadcast((NodeReference) edge.To.GraphId));
             return this;
         }
 
         public Edge GetById(long id)
         {
-            var nodes = this.GetClient().RootNode.InE(id.ToString()).BothV<GraphIdentity>().ToList();
+            var nodes = this.Client.RootNode.InE(id.ToString()).BothV<GraphIdentity>().ToList();
             return new Edge()
                 {
                     Id = id,
@@ -41,7 +41,7 @@ namespace Crosstalk.Core.Repositories
 
         public IEnumerable<Edge> GetFromNode(Identity node)
         {
-            return this.GetClient()
+            return this.Client
                        .Get<GraphIdentity>(node.GraphId)
                        .OutE(Edges.Broadcast)
                        .Select(n => new Edge()
