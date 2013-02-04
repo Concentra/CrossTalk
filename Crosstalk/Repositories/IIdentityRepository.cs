@@ -14,5 +14,6 @@ namespace Crosstalk.Core.Repositories
         IEnumerable<TItem> BindPartials<TItem>(IEnumerable<TItem> items, IEnumerable<string> fields);
         TItem BindPartial<TItem>(TItem item, IEnumerable<string> fields);
         IEnumerable<Identity> Filter(Func<Identity, bool> selector);
+        IEnumerable<Identity> Search(string field, string value);
     }
 }

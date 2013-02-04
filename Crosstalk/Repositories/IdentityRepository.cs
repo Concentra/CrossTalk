@@ -78,7 +78,27 @@ namespace Crosstalk.Core.Repositories
 
         public IEnumerable<Identity> Filter(Func<Identity, bool> selector)
         {
-            return this.GetCollection().AsQueryable().Where(selector);
+            return this.GetCollection().AsQueryable<Identity>().Where(selector);
+        }
+
+        public IEnumerable<Identity> Search(string field, string value)
+        {
+            return this.GetCollection().AsQueryable().Where((Func<Identity, bool>) (i =>
+                {
+                    if (i.GetType().GetField(field) != null)
+                    {
+                        return value == (i.GetType().GetField(field).GetValue(i) as string);
+                    }
+                    if (null != i.Others && i.Others.Contains(field))
+                    {
+                        if (i.Others[field].IsBsonArray)
+                        {
+                            return -1 < i.Others[field].AsBsonArray.IndexOf(BsonDocument.Parse(value));
+                        }
+                        return i.Others[field].AsBsonDocument.ContainsValue(BsonDocument.Parse(value));
+                    }
+                    return false;
+                }));
         }
     }
 }

@@ -30,24 +30,11 @@ namespace Crosstalk.Core.Controllers
         [HttpGet]
         public IEnumerable<Identity> Search(string field, string value)
         {
-            // TODO: Optimise, we can provide the query directly to mongo as a json object
-            return this._identityRepository.Filter(i =>
-                {
-                    if (null != i.Others && i.Others.Contains(field))
-                    {
-                        if (i.Others[field].IsBsonArray)
-                        {
-                            return -1 < i.Others[field].AsBsonArray.IndexOf(BsonDocument.Parse(value));
-                        }
-                        return i.Others[field].AsBsonDocument.ContainsValue(BsonDocument.Parse(value));
-                    }
-                    return false;
-                });
+            return this._identityRepository.Search(field, value);
         }
 
         public Identity Post([FromBody] Identity model)
         {
-
             model.OId = ObjectId.GenerateNewId();
             model.GraphId = this._graphClient.Create(model.ToGraphIdentity()).Id;
             this._identityRepository.Save(model);

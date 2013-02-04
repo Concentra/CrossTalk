@@ -52,7 +52,7 @@ namespace Crosstalk.Core.Models
             return new GraphIdentity
                 {
                     Id = this.Id,
-                    Type = this.Type
+                    Type = this.Type.ToString()
                 };
         }
 
