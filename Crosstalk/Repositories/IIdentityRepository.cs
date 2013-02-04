@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Crosstalk.Common.Models;
 using Crosstalk.Core.Models;
 using MongoDB.Bson;
 

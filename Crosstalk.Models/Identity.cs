@@ -140,7 +140,7 @@ namespace Crosstalk.Core.Models
             var obj = JObject.Load(reader);
             var target = new Identity();
             serializer.Populate(obj.CreateReader(), target);
-            target.Others = target.GetDataAsDocument();
+            //target.Others = target.GetDataAsDocument();
             return target;
         }
 

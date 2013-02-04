@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using Autofac;
+using Crosstalk.Common.Models;
 using Crosstalk.Core.Models;
 using Crosstalk.Core.Repositories;
 using MongoDB.Bson;
@@ -46,6 +47,7 @@ namespace Crosstalk.Core.Controllers
 
         public Identity Post([FromBody] Identity model)
         {
+
             model.OId = ObjectId.GenerateNewId();
             model.GraphId = this._graphClient.Create(model.ToGraphIdentity()).Id;
             this._identityRepository.Save(model);
