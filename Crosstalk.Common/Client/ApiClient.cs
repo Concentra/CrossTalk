@@ -38,6 +38,7 @@ namespace Crosstalk.Common.Client
 
         public HttpResponseMessage RawGet(string url)
         {
+            url = url.TrimStart(new char[] {'/'});
             return this._client.GetAsync(url).Result;
         }
 
