@@ -8,6 +8,7 @@ using Crosstalk.Core.Exceptions;
 using Crosstalk.Core.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Builders;
 using MongoDB.Driver.Linq;
 
 namespace Crosstalk.Core.Repositories
@@ -83,12 +84,15 @@ namespace Crosstalk.Core.Repositories
 
         public IEnumerable<Identity> Search(string field, string value)
         {
+            var type = typeof (Identity);
+            if (null != type.GetProperty(field))
+            {
+                return from i in this.GetCollection().AsQueryable()
+                       where Query.EQ(field, BsonValue.Create(value)).Inject()
+                       select i;
+            }
             return this.GetCollection().AsQueryable().Where((Func<Identity, bool>) (i =>
                 {
-                    if (i.GetType().GetField(field) != null)
-                    {
-                        return value == (i.GetType().GetField(field).GetValue(i) as string);
-                    }
                     if (null != i.Others && i.Others.Contains(field))
                     {
                         if (i.Others[field].IsBsonArray)
