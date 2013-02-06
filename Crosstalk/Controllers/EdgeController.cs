@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
 using Crosstalk.Core.Models;
+using Crosstalk.Core.Models.Channels;
 using Crosstalk.Core.Repositories;
 
 namespace Crosstalk.Core.Controllers
@@ -17,17 +18,27 @@ namespace Crosstalk.Core.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Edge> Out(string id)
+        public IEnumerable<Edge> Out(string id, ChannelType type)
         {
-            var edges = this._edgeRepository.GetFromNode(this._identityRepository.GetById(id));
+            var edges = this._edgeRepository.GetFromNode(this._identityRepository.GetById(id), type);
             return this._identityRepository.BindPartials(edges, new string[] {"To", "From"});
         }
 
         [HttpGet]
-        public IEnumerable<Edge> In(string id)
+        public IEnumerable<Edge> In(string id, ChannelType type)
         {
-            var edges = this._edgeRepository.GetToNode(this._identityRepository.GetById(id));
+            var edges = this._edgeRepository.GetToNode(this._identityRepository.GetById(id), type);
             return this._identityRepository.BindPartials(edges, new string[] {"To", "From"});
+        }
+
+        [HttpGet]
+        public Edge Find(string from, string to, ChannelType type)
+        {
+            var fromId = this._identityRepository.GetById(from);
+            var toId = this._identityRepository.GetById(to);
+
+            return this._edgeRepository.GetByFromTo(fromId, toId, type);
+
         }
     }
 }
