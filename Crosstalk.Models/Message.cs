@@ -20,5 +20,7 @@ namespace Crosstalk.Core.Models
         public DateTime Created { get; set; }
 
         public IEnumerable<string> WhiteList { get; set; }
+
+        public bool Read { get; set; }
     }
 }

@@ -32,7 +32,7 @@ namespace Crosstalk.Core.Controllers
         }
 
         [HttpGet]
-        public Edge Find(string from, string to, ChannelType type)
+        public Edge Find(string from, string to, string type)
         {
             var fromId = this._identityRepository.GetById(from);
             var toId = this._identityRepository.GetById(to);
