@@ -52,7 +52,7 @@ namespace Crosstalk.Core.Models
             return new GraphIdentity
                 {
                     Id = this.Id,
-                    Type = this.Type
+                    Type = this.Type.ToString()
                 };
         }
 
@@ -81,6 +81,14 @@ namespace Crosstalk.Core.Models
                     }
                     result.Add(kv.Key, inner);
                 }
+                else if (kv.Value is JValue)
+                {
+                    result.Add(kv.Key, BsonValue.Create(kv.Value as JValue));
+                }
+                else
+                {
+                    result.Add(kv.Key, (string) kv.Value);
+                }
             }
             return result;
         }
@@ -101,7 +109,7 @@ namespace Crosstalk.Core.Models
                 }
                 else
                 {
-                    obj = JObject.Parse(element.Value.ToJson());
+                    obj = element.Value.RawValue;
                 }
                 result.Add(element.Name, obj);
             }

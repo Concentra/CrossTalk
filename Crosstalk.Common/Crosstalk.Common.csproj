@@ -52,6 +52,7 @@
     <Compile Include="Client\IApiClient.cs" />
     <Compile Include="Exceptions\HttpInternalServerErrorException.cs" />
     <Compile Include="Exceptions\HttpNotFoundException.cs" />
+    <Compile Include="Models\IdentityTypes.cs" />
     <Compile Include="Repositories\BaseMongoRepository.cs" />
     <Compile Include="Repositories\IMongoRepository.cs" />
     <Compile Include="Models\IIdentity.cs" />

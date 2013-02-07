@@ -63,6 +63,12 @@ namespace Crosstalk.Common.Client
             return this._client.PostAsync(url, content).Result;
         }
 
+        public void Delete(string url)
+        {
+            var res = this.Client.DeleteAsync(url).Result;
+            this.EnsureSuccessStatusCode(res);
+        }
+
         private void EnsureSuccessStatusCode(HttpResponseMessage response)
         {
             if (response.IsSuccessStatusCode)
