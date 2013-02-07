@@ -20,35 +20,45 @@ namespace Crosstalk.Core.Repositories
 
         public IEdgeRepository Save(Edge edge, ChannelType type)
         {
-            var constructorInfo = type.ToType().GetConstructor(new Type[] {typeof (NodeReference)});
+            edge.Type = type;
+            return this.Save(edge);
+        }
+
+        public IEdgeRepository Save(Edge edge){
+            if (null == edge.Type)
+            {
+                throw new ArgumentNullException("edge", "Edge has no channel type");
+            }
+            var constructorInfo = edge.Type.ToType().GetConstructor(new Type[] {typeof (NodeReference)});
             if (constructorInfo == null)
             {   
-                throw new ArgumentOutOfRangeException("type", "Not a valid channel type");
+                throw new ArgumentOutOfRangeException("edge", "Not a valid channel type");
             }
             var channel = (BaseChannel) constructorInfo.Invoke(new object[] { edge.To.GraphId });
             this.Client.CreateRelationship((NodeReference<GraphIdentity>) edge.From.GraphId, channel);
             return this;
         }
 
-        public Edge GetById(long id)
-        {
-            var nodes = this.Client.RootNode.InE(id.ToString()).BothV<GraphIdentity>().ToList();
-            return new Edge()
-                {
-                    Id = id,
-                    From = new Identity
-                        {
-                            Id = nodes[0].Data.Id
-                        },
-                    To = new Identity
-                        {
-                            Id = nodes[1].Data.Id
-                        }
-                };
-        }
+        //public Edge GetById(long id)
+        //{
+        //    var nodes = this.Client.RootNode.InE(id.ToString()).BothV<GraphIdentity>().ToList();
+        //    return new Edge()
+        //        {
+        //            Id = id,
+        //            From = new Identity
+        //                {
+        //                    Id = nodes[0].Data.Id
+        //                },
+        //            To = new Identity
+        //                {
+        //                    Id = nodes[1].Data.Id
+        //                }
+        //        };
+        //}
 
         public IEnumerable<Edge> GetFromNode(Identity node, ChannelType type)
         {
+            type = type ?? ChannelType.Public;
             return this.Client
                        .Get<GraphIdentity>(node.GraphId)
                        .OutE(type)
@@ -60,7 +70,8 @@ namespace Crosstalk.Core.Repositories
                                    GraphId = n.EndNodeReference.Id
                                },
                            From = node,
-                           Id = n.Reference.Id
+                           Id = n.Reference.Id,
+                           Type = n.TypeKey
                        });
         }
 
@@ -71,6 +82,7 @@ namespace Crosstalk.Core.Repositories
 
         public IEnumerable<Edge> GetToNode(Identity node, ChannelType type, uint depth)
         {
+            type = type ?? ChannelType.Public;
             // g.v(317).as('x').outE.as('edge').inV.loop('x'){it.loops < 3 && it.object.Type != "public"}.path().scatter.dedup.filter{it.Id == null}.id
             var rels = this.Client.ExecuteGetAllRelationshipsGremlin<Edge>(
                 "g.v(node).as('x').outE(channel).inV.loop('x'){it.loops < 3 && it.object.Type != type}.path().scatter.dedup.filter{it.Id == null}",
@@ -78,7 +90,7 @@ namespace Crosstalk.Core.Repositories
                     {
                         {"node", node.GraphId},
                         {"type", Identity.Public},
-                        {"channel", type}
+                        {"channel", type.ToString()}
                     });
             return rels.Select(n => new Edge()
                 {
@@ -92,7 +104,8 @@ namespace Crosstalk.Core.Repositories
                             Id = this.Client.Get<GraphIdentity>(n.EndNodeReference).Data.Id,
                             GraphId = n.EndNodeReference.Id
                         },
-                    Id = n.Reference.Id
+                    Id = n.Reference.Id,
+                    Type = n.TypeKey
                 });
             return this.Client
                        .Get<GraphIdentity>(node.GraphId)
@@ -122,7 +135,8 @@ namespace Crosstalk.Core.Repositories
                            {
                                From = from,
                                To = to,
-                               Id = e.Reference.Id
+                               Id = e.Reference.Id,
+                               Type = e.TypeKey
                            }).FirstOrDefault();
         }
     }

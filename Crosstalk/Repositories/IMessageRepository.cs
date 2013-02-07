@@ -7,6 +7,7 @@ namespace Crosstalk.Core.Repositories
     {
         IList<Message> GetList();
         IList<Message> GetListForEdge(Edge edge);
+        IList<Message> GetListForEdge(Edge edge, int? count);
         Message Get(string messageId);
         bool Save(Message message);
         // void Moderate(int messageId);

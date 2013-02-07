@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Crosstalk.Core.Models;
+using Crosstalk.Core.Models.Channels;
 using Crosstalk.Core.Repositories;
 using MongoDB.Bson;
 using Neo4jClient;
@@ -73,7 +74,7 @@ namespace Crosstalk.Core.Services
                         {
                             To = assoc,
                             From = me
-                        });
+                        }, ChannelType.Public);
                 }
             }
 
@@ -85,7 +86,7 @@ namespace Crosstalk.Core.Services
                         {
                             From = assoc,
                             To = me
-                        });
+                        }, ChannelType.Public);
                 }
             }
 
@@ -106,11 +107,11 @@ namespace Crosstalk.Core.Services
                 {
                     From = association,
                     To = me
-                }).Save(new Edge()
+                }, ChannelType.Public).Save(new Edge()
                 {
                     From = me,
                     To = association
-                });
+                }, ChannelType.Public);
             return me;
         }
     }

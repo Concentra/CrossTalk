@@ -58,7 +58,7 @@ namespace Crosstalk.Core.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Message> GetByChannel(string from, string to, ChannelType type)
+        public IEnumerable<Message> Channel(string from, string to, ChannelType type, int? count)
         {
             var fId = this._identityRepository.GetById(from);
             var tId = this._identityRepository.GetById(to);
@@ -75,7 +75,7 @@ namespace Crosstalk.Core.Controllers
             {
                 edge.From = edge.From.Id == from ? fId : tId;
                 edge.To = edge.To.Id == to ? tId : fId;
-                messages.AddRange(this._messageRepository.GetListForEdge(edge));
+                messages.AddRange(this._messageRepository.GetListForEdge(edge, count));
             }
 
             return messages;
