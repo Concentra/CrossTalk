@@ -41,6 +41,8 @@ namespace Crosstalk.Core.Models.Channels
 
         public static implicit operator ChannelType(string key)
         {
+            if (null == key) return null;
+
             ChannelType type;
             if (Instances.TryGetValue(key, out type))
             {

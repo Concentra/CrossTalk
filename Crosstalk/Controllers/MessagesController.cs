@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using Crosstalk.Core.Exceptions;
 using Crosstalk.Core.Models;
@@ -43,6 +44,7 @@ namespace Crosstalk.Core.Controllers
         }
 
         [HttpGet]
+        [ActionName("Feed")]
         public IEnumerable<Message> Feed(string id)
         {
             var me = this._identityRepository.GetById(id);
@@ -58,7 +60,13 @@ namespace Crosstalk.Core.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Message> Channel(string from, string to, ChannelType type, int? count)
+        public IEnumerable<Message> Channel(string from, string to, string type)
+        {
+            return this.Channel(from, to, type, null);
+        }
+
+        [HttpGet]
+        public IEnumerable<Message> Channel(string from, string to, string type, int? count)
         {
             var fId = this._identityRepository.GetById(from);
             var tId = this._identityRepository.GetById(to);
@@ -71,7 +79,7 @@ namespace Crosstalk.Core.Controllers
 
             var messages = new List<Message>();
 
-            foreach (var edge in edges)
+            foreach (var edge in edges.Where(e => null != e))
             {
                 edge.From = edge.From.Id == from ? fId : tId;
                 edge.To = edge.To.Id == to ? tId : fId;
@@ -87,6 +95,8 @@ namespace Crosstalk.Core.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [HttpGet]
+        [ActionName("Get")]
         public Message Get(string id)
         {
             return this._messageRepository.Get(id);

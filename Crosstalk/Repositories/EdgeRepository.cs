@@ -56,6 +56,12 @@ namespace Crosstalk.Core.Repositories
         //        };
         //}
 
+        /// <summary>
+        /// Get nodes we broadcast to
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public IEnumerable<Edge> GetFromNode(Identity node, ChannelType type)
         {
             type = type ?? ChannelType.Public;
@@ -75,9 +81,15 @@ namespace Crosstalk.Core.Repositories
                        });
         }
 
+        /// <summary>
+        /// Get nodes we receive broadcasts from
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public IEnumerable<Edge> GetToNode(Identity node, ChannelType type)
         {
-            return this.GetToNode(node, type, 1);
+            return this.GetToNode(node, type, 0);
         }
 
         public IEnumerable<Edge> GetToNode(Identity node, ChannelType type, uint depth)
