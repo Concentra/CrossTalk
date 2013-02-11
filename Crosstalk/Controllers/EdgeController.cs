@@ -38,8 +38,7 @@ namespace Crosstalk.Core.Controllers
         }
         
         [HttpGet]
-        public IEnumerable<
-            Edge> In(string id, string type)
+        public IEnumerable<Edge> In(string id, string type)
         {
             var edges = this._edgeRepository.GetToNode(this._identityRepository.GetById(id), type);
             return this._identityRepository.BindPartials(edges, new string[] {"To", "From"});
