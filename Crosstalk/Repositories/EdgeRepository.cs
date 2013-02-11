@@ -97,7 +97,7 @@ namespace Crosstalk.Core.Repositories
             type = type ?? ChannelType.Public;
             // g.v(317).as('x').outE.as('edge').inV.loop('x'){it.loops < 3 && it.object.Type != "public"}.path().scatter.dedup.filter{it.Id == null}.id
             var rels = this.Client.ExecuteGetAllRelationshipsGremlin<Edge>(
-                "g.v(node).as('x').outE(channel).inV.loop('x'){it.loops < 3 && it.object.Type != type}.path().scatter.dedup.filter{it.Id == null}",
+                "g.v(node).as('x').outE(channel).inV.loop('x'){it.loops < " + depth + " && it.object.Type != type}.path().scatter.dedup.filter{it.Id == null}",
                 new Dictionary<string, object>()
                     {
                         {"node", node.GraphId},
