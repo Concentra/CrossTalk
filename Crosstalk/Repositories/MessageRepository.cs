@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Crosstalk.Common.Repositories;
 using Crosstalk.Core.Models;
 using MongoDB.Driver;
+using MongoDB.Driver.Builders;
 using MongoDB.Driver.Linq;
 using MongoDB.Bson;
 
@@ -38,12 +42,21 @@ namespace Crosstalk.Core.Repositories
                 results = results.Take(count.Value);
             }
 
-            return results.Select(m => new Message
-                {
-                    Body = m.Body,
-                    Id = m.Id,
-                    Edge = edge
-                }).ToList();
+            var list = results.ToList();
+
+            Parallel.ForEach(list,
+                             m =>
+                                {
+                                    if (ObjectId.Empty != m.OriginalMessageId)
+                                    {
+                                        m.OriginalMessage = this.Get(m.OriginalMessageId.ToString());
+                                    }
+                                    m.NumberOfShares =
+                                        this.GetCollection().AsQueryable().Count(s => s.OriginalMessageId == m.Id);
+                                    m.Edge = edge;
+                                });
+
+            return list;
         }
 
         public Message Get(string messageId)
@@ -53,8 +66,9 @@ namespace Crosstalk.Core.Repositories
 
         public bool Save(Message message)
         {
-            var result = this.GetCollection().Insert(message);
-            return result.Ok;
+            return (this.GetCollection().AsQueryable().Any(m => m.Id == message.Id)
+                ? this.GetCollection().Save(message)
+                : this.GetCollection().Insert(message)).Ok;
         }
     }
 }
