@@ -30,7 +30,7 @@ namespace Crosstalk.Core.Repositories
             {
                 identity.OId = ObjectId.GenerateNewId();
             }
-            identity.Others = identity.GetDataAsDocument();
+            //identity.Others = identity.GetDataAsDocument();
             if (!this.GetCollection().Insert(identity).Ok)
             {
                 throw new IOException("Could not save identity");

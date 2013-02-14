@@ -7,6 +7,7 @@ using Crosstalk.Core.Models;
 using Crosstalk.Core.Repositories;
 using MongoDB.Bson;
 using Neo4jClient;
+using Newtonsoft.Json.Linq;
 
 namespace Crosstalk.Core.Controllers
 {
@@ -27,14 +28,15 @@ namespace Crosstalk.Core.Controllers
             return identity;
         }
 
-        [HttpGet]
+        [System.Web.Http.HttpGet]
         public IEnumerable<Identity> Search(string field, string value)
         {
             return this._identityRepository.Search(field, value);
         }
 
-        public Identity Post([FromBody] Identity model)
+        public Identity Post(JObject obj)
         {
+            var model = obj.ToObject<Identity>();
             model.OId = ObjectId.GenerateNewId();
             model.GraphId = this._graphClient.Create(model.ToGraphIdentity()).Id;
             this._identityRepository.Save(model);
