@@ -36,27 +36,13 @@ namespace Crosstalk.Core.Repositories
             IQueryable<Message> results = this.GetCollection().AsQueryable()
                 .Where(m => m.Edge.Id == edge.Id)
                 .OrderByDescending(m => m.Created);
-            
+
             if (count.HasValue)
             {
                 results = results.Take(count.Value);
             }
 
-            var list = results.ToList();
-
-            Parallel.ForEach(list,
-                             m =>
-                                {
-                                    if (ObjectId.Empty != m.OriginalMessageId)
-                                    {
-                                        m.OriginalMessage = this.Get(m.OriginalMessageId.ToString());
-                                    }
-                                    m.NumberOfShares =
-                                        this.GetCollection().AsQueryable().Count(s => s.OriginalMessageId == m.Id);
-                                    m.Edge = edge;
-                                });
-
-            return list;
+            return results.ToList();
         }
 
         public Message Get(string messageId)
@@ -66,9 +52,26 @@ namespace Crosstalk.Core.Repositories
 
         public bool Save(Message message)
         {
+            message.Id = ObjectId.GenerateNewId();
+            message.Created = DateTime.Now;
+            if (null != message.OriginalMessage)
+            {
+                message.OriginalMessageId = message.OriginalMessage.Id;
+            }
             return (this.GetCollection().AsQueryable().Any(m => m.Id == message.Id)
                 ? this.GetCollection().Save(message)
                 : this.GetCollection().Insert(message)).Ok;
+        }
+
+        public long CountShares(string messageId)
+        {
+            var query = Query.EQ("OriginalMessageId", ObjectId.Parse(messageId));
+            return this.GetCollection().Find(query).Count();
+        }
+
+        public int Count(Func<Message, bool> predicate)
+        {
+            return this.GetCollection().AsQueryable().Count(predicate);
         }
     }
 }

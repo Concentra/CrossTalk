@@ -172,6 +172,10 @@
     <Compile Include="Repositories\MessageRepository.cs" />
     <Compile Include="Serializers\IdentitySerializer.cs" />
     <Compile Include="Services\BootstrapService.cs" />
+    <Compile Include="Services\EdgeService.cs" />
+    <Compile Include="Services\IEdgeService.cs" />
+    <Compile Include="Services\IMessageService.cs" />
+    <Compile Include="Services\MessageService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
