@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 namespace Crosstalk.Core.Models
 {
+    [BsonIgnoreExtraElements]
     public class Message
     {
         [BsonId]
