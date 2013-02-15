@@ -11,6 +11,7 @@ namespace Crosstalk.Core.Repositories
         IIdentityRepository Save(Identity identity);
         Identity GetById(string id);
         Identity GetById(ObjectId id);
+        Identity GetPublicSpace();
         IEnumerable<TItem> BindPartials<TItem>(IEnumerable<TItem> items, IEnumerable<string> fields);
         TItem BindPartial<TItem>(TItem item, IEnumerable<string> fields);
         IEnumerable<Identity> Filter(Func<Identity, bool> selector);

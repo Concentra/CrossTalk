@@ -30,12 +30,16 @@ namespace Crosstalk.Core.Repositories
             {
                 identity.OId = ObjectId.GenerateNewId();
             }
-            //identity.Others = identity.GetDataAsDocument();
             if (!this.GetCollection().Insert(identity).Ok)
             {
                 throw new IOException("Could not save identity");
             }
             return this;
+        }
+
+        public Identity GetPublicSpace()
+        {
+            return this.GetCollection().AsQueryable().First(i => Identity.Public == i.Type);
         }
 
         public Identity GetById(string id)

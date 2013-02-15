@@ -121,9 +121,9 @@ namespace Crosstalk.Core.Models
 
     public class IdentityConvertor : JsonConverter
     {
-        private static bool _canWrite = true;
+        private Boolean _canWrite = true;
 
-        public override bool CanWrite
+        public override Boolean CanWrite
         {
             get
             {
@@ -137,12 +137,16 @@ namespace Crosstalk.Core.Models
             {
                 throw new ArgumentException("value is not Identity", "value");
             }
+            
             var target = (Identity) value;
             target.Data = target.GetDictionaryFromDocument();
-            serializer.Converters.Remove(this);
-            _canWrite = false;
-            serializer.Serialize(writer, target);
-            _canWrite = true;
+            //lock (this._canWrite)
+            //{
+                serializer.Converters.Remove(this);
+                _canWrite = false;
+                serializer.Serialize(writer, target);
+                _canWrite = true;
+            //}
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
