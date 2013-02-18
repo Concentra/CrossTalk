@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using Autofac;
 using Crosstalk.Common.Models;
@@ -33,6 +35,12 @@ namespace Crosstalk.Core.Controllers
         }
 
         [HttpGet]
+        public IEnumerable<Identity> Search()
+        {
+            return this._identityRepository.Search(HttpUtility.ParseQueryString(this.Request.RequestUri.Query));
+        }
+        
+        [HttpGet]
         public IEnumerable<Identity> Search(string field, string value)
         {
             return this._identityRepository.Search(field, value);
@@ -47,13 +55,22 @@ namespace Crosstalk.Core.Controllers
                 throw new ArgumentException("The Public space can only be created internally.");
             }
 
+            /**
+             * Bring additional fields into Data
+             */
+            //var props = obj.Properties().Where(p => typeof (Identity).GetProperty(p.Name) == null && p.Name != "Parent");
+            //foreach (var prop in props)
+            //{
+            //    model.Data[prop.Name] = prop.Value<String>();
+            //}
+
             model.OId = ObjectId.GenerateNewId();
 
             /**
              * Create a graph representation of the Identity
              */
             model.GraphId = this._graphClient.Create(model.ToGraphIdentity()).Id;
-            
+
             var actions = new List<Action>
                 {
                     /**
@@ -64,12 +81,7 @@ namespace Crosstalk.Core.Controllers
                             From = model,
                             To = model,
                             Type = ChannelType.Public
-                        }),
-
-                    /**
-                     * Store the Group or Person
-                     */
-                    () => this._identityRepository.Save(model)
+                        })
                 };
 
             /**
@@ -82,21 +94,20 @@ namespace Crosstalk.Core.Controllers
                         From = model,
                         To = this._identityRepository.GetPublicSpace(),
                         Type = ChannelType.Public
+                    }).Save(new Edge
+                    {
+                        From = this._identityRepository.GetPublicSpace(),
+                        To = model,
+                        Type = ChannelType.Public
                     }));
-                actions.Add(() => this._edgeRepository.Save(new Edge
-                {
-                    From = this._identityRepository.GetPublicSpace(),
-                    To = model,
-                    Type = ChannelType.Public
-                }));
             }
 
             /**
              * If the Group or Person has a parent, connect them to it.
              */
-            if (null != obj.GetValue("Parent"))
+            if (null != model.Data && model.Data.ContainsKey("Parent") && null != (model.Data["Parent"] as string))
             {
-                var parent = this._identityRepository.GetById(obj.GetValue("Parent").ToObject<string>());
+                var parent = this._identityRepository.GetById(model.Data["Parent"] as string);
                 if (null != parent)
                 {
                     switch (model.Type)
@@ -155,7 +166,18 @@ namespace Crosstalk.Core.Controllers
             /**
              * Store the identity and connections
              */
-            Parallel.Invoke(actions.ToArray());
+            Parallel.Invoke(new Action[] {
+                () => this._identityRepository.Save(model),
+                () => {
+                    /**
+                     * Graph actions hitting the same nodes will create a deadlock in a multi-threaded setting.
+                     * See: http://docs.neo4j.org/chunked/milestone/transactions-locking.html
+                     */
+                    foreach(var action in actions) {
+                        action.Invoke();
+                    }
+                }
+            });
             return model;
         }
 

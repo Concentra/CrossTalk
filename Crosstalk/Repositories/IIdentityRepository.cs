@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using Crosstalk.Common.Models;
 using Crosstalk.Core.Models;
 using MongoDB.Bson;
@@ -16,5 +17,6 @@ namespace Crosstalk.Core.Repositories
         TItem BindPartial<TItem>(TItem item, IEnumerable<string> fields);
         IEnumerable<Identity> Filter(Func<Identity, bool> selector);
         IEnumerable<Identity> Search(string field, string value);
+        IEnumerable<Identity> Search(NameValueCollection parameters);
     }
 }

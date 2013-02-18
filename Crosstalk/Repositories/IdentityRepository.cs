@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using Crosstalk.Common.Models;
@@ -107,6 +108,26 @@ namespace Crosstalk.Core.Repositories
                     }
                     return false;
                 }));
+        }
+
+        public IEnumerable<Identity> Search(NameValueCollection parameters)
+        {
+            var queries = new List<IMongoQuery>();
+            
+            foreach (var key in parameters.AllKeys)
+            {
+                var vals = parameters.GetValues(key);
+                if (null == vals) continue;
+                if (vals.Count() > 1)
+                {
+                    queries.Add(Query.In(key, vals.Select(BsonValue.Create)));
+                } else if (vals.Count() == 1)
+                {
+                    queries.Add(Query.EQ(key, BsonValue.Create(vals.First())));
+                }
+            }
+
+            return this.GetCollection().Find(Query.And(queries));
         }
     }
 }
