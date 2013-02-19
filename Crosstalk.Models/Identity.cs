@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using Crosstalk.Common.Models;
 using MongoDB.Bson;
@@ -63,6 +64,7 @@ namespace Crosstalk.Core.Models
 
         public BsonDocument GetDataAsDocument()
         {
+            return this.Data.ToBsonDocument();
             var result = new BsonDocument();
             if (null == this.Data)
             {
@@ -119,9 +121,9 @@ namespace Crosstalk.Core.Models
 
     public class IdentityConvertor : JsonConverter
     {
-        private static bool _canWrite = true;
+        private Boolean _canWrite = true;
 
-        public override bool CanWrite
+        public override Boolean CanWrite
         {
             get
             {
@@ -135,12 +137,16 @@ namespace Crosstalk.Core.Models
             {
                 throw new ArgumentException("value is not Identity", "value");
             }
+            
             var target = (Identity) value;
             target.Data = target.GetDictionaryFromDocument();
-            serializer.Converters.Remove(this);
-            _canWrite = false;
-            serializer.Serialize(writer, target);
-            _canWrite = true;
+            //lock (this._canWrite)
+            //{
+                serializer.Converters.Remove(this);
+                _canWrite = false;
+                serializer.Serialize(writer, target);
+                _canWrite = true;
+            //}
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -148,7 +154,12 @@ namespace Crosstalk.Core.Models
             var obj = JObject.Load(reader);
             var target = new Identity();
             serializer.Populate(obj.CreateReader(), target);
-            //target.Others = target.GetDataAsDocument();
+            if (null != target.Data && target.Data.Any())
+            {
+                var doc = JsonConvert.SerializeObject(target.Data);
+                var res = BsonDocument.Parse(doc);
+                target.Others = res;
+            }
             return target;
         }
 

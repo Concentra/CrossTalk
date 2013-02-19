@@ -7,6 +7,6 @@ namespace Crosstalk.Core.Models.Relationships
     {
         public PrivateChannel(NodeReference targetNode) : base(targetNode) {}
 
-        public override string TypeKey { get { return ChannelType.Labels.Public; } }
+        public override string TypeKey { get { return ChannelType.Labels.Private; } }
     }
 }
