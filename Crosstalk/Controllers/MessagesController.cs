@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
+using Crosstalk.Core.Collections;
 using Crosstalk.Core.Exceptions;
 using Crosstalk.Core.Models;
 using Crosstalk.Core.Models.Channels;
 using Crosstalk.Core.Repositories;
+using Crosstalk.Core.Services;
 using MongoDB.Bson;
+using Newtonsoft.Json.Linq;
 
 namespace Crosstalk.Core.Controllers
 {
@@ -16,12 +21,17 @@ namespace Crosstalk.Core.Controllers
         private readonly IMessageRepository _messageRepository;
         private readonly IEdgeRepository _edgeRepository;
         private readonly IIdentityRepository _identityRepository;
+        private readonly IMessageService _messageService;
 
-        public MessagesController(IMessageRepository messageRepository, IEdgeRepository edgeRepository, IIdentityRepository identityRepository)
+        public MessagesController(IMessageRepository messageRepository,
+            IEdgeRepository edgeRepository,
+            IIdentityRepository identityRepository,
+            IMessageService messageService)
         {
             this._messageRepository = messageRepository;
             this._edgeRepository = edgeRepository;
             this._identityRepository = identityRepository;
+            this._messageService = messageService;
         }
 
         // GET api/messages?identity=id
@@ -38,7 +48,7 @@ namespace Crosstalk.Core.Controllers
             {
                 edge.From = edge.From.Id == me.Id ? me : this._identityRepository.GetById(edge.From.Id);
                 edge.To = edge.To.Id == me.Id ? me : this._identityRepository.GetById(edge.To.Id);
-                messages.AddRange(this._messageRepository.GetListForEdge(edge));
+                messages.AddRange(this._messageService.GetListForEdge(edge));
             }
             return messages;
         }
@@ -48,14 +58,18 @@ namespace Crosstalk.Core.Controllers
         public IEnumerable<Message> Feed(string id)
         {
             var me = this._identityRepository.GetById(id);
-            var edges = new List<Edge>(this._edgeRepository.GetToNode(me, ChannelType.Public, 2));
-            var messages = new List<Message>();
-            foreach (var edge in edges)
-            {
-                edge.From = edge.From.Id == me.Id ? me : this._identityRepository.GetById(edge.From.Id);
-                edge.To = edge.To.Id == me.Id ? me : this._identityRepository.GetById(edge.To.Id);
-                messages.AddRange(this._messageRepository.GetListForEdge(edge));
-            }
+            var edges = new List<Edge>(this._edgeRepository.GetToNode(me, ChannelType.Public, 3));
+            var messages = new OrderedList<Message>((l, n) =>
+                l.Created == n.Created ? 0 : l.Created > n.Created ? 1 : -1);
+            Parallel.ForEach(edges, edge =>
+                {
+                    edge.From = edge.From.Id == me.Id ? me : this._identityRepository.GetById(edge.From.Id);
+                    edge.To = edge.To.Id == me.Id ? me : this._identityRepository.GetById(edge.To.Id);
+                    lock (messages)
+                    {
+                        messages.AddRange(this._messageService.GetListForEdge(edge));
+                    }
+                });
             return messages;
         }
 
@@ -77,13 +91,18 @@ namespace Crosstalk.Core.Controllers
                     this._edgeRepository.GetByFromTo(tId, fId, type)
                 };
 
-            var messages = new List<Message>();
+            var messages = new OrderedList<Message>((l, n) =>
+                l.Created == n.Created ? 0 : l.Created > n.Created ? 1 : -1);
 
             foreach (var edge in edges.Where(e => null != e))
             {
                 edge.From = edge.From.Id == from ? fId : tId;
                 edge.To = edge.To.Id == to ? tId : fId;
-                messages.AddRange(this._messageRepository.GetListForEdge(edge, count));
+                
+                foreach (var message in this._messageService.GetListForEdge(edge, count))
+                {
+                    messages.Add(message);
+                }
             }
 
             return messages;
@@ -105,8 +124,6 @@ namespace Crosstalk.Core.Controllers
         // POST api/messages
         public Message Post(Message message)
         {
-            message.Id = ObjectId.GenerateNewId();
-            message.Created = DateTime.Now;
             this._messageRepository.Save(message);
             return message;
         }

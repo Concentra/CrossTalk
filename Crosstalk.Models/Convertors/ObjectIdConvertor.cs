@@ -1,5 +1,7 @@
 ﻿using System;
+using MongoDB.Bson;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Crosstalk.Core.Models.Convertors
 {
@@ -12,11 +14,17 @@ namespace Crosstalk.Core.Models.Convertors
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            string oid;
             if (typeof (MongoDB.Bson.ObjectId) == objectType)
             {
-                return existingValue;
+                var tmp = JToken.Load(reader);
+                oid = tmp.Value<string>();
             }
-            return new MongoDB.Bson.ObjectId((string)existingValue);
+            else
+            {
+                oid = (existingValue as string);
+            }
+            return ObjectId.Parse(oid);
         }
 
         public override bool CanConvert(Type objectType)
