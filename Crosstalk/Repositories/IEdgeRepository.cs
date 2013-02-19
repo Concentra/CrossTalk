@@ -8,7 +8,7 @@ namespace Crosstalk.Core.Repositories
     {
         IEdgeRepository Save(Edge edge, ChannelType type);
         IEdgeRepository Save(Edge edge);
-        //Edge GetById(long id);
+        Edge GetById(long id);
         IEnumerable<Edge> GetFromNode(Identity node, ChannelType type);
         IEnumerable<Edge> GetToNode(Identity node, ChannelType type);
         IEnumerable<Edge> GetToNode(Identity node, ChannelType type, uint depth);
