@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using Crosstalk.Core.Enums;
 using Crosstalk.Core.Models;
@@ -34,27 +35,33 @@ namespace Crosstalk.Core.Repositories
             {   
                 throw new ArgumentOutOfRangeException("edge", "Not a valid channel type");
             }
-            var channel = (BaseChannel) constructorInfo.Invoke(new object[] { edge.To.GraphId });
+            var channel = (BaseChannel) constructorInfo.Invoke(new object[] { (NodeReference) edge.To.GraphId });
             this.Client.CreateRelationship((NodeReference<GraphIdentity>) edge.From.GraphId, channel);
             return this;
         }
 
-        //public Edge GetById(long id)
-        //{
-        //    var nodes = this.Client.RootNode.InE(id.ToString()).BothV<GraphIdentity>().ToList();
-        //    return new Edge()
-        //        {
-        //            Id = id,
-        //            From = new Identity
-        //                {
-        //                    Id = nodes[0].Data.Id
-        //                },
-        //            To = new Identity
-        //                {
-        //                    Id = nodes[1].Data.Id
-        //                }
-        //        };
-        //}
+        public Edge GetById(long id)
+        {
+            var nodes = this.Client.ExecuteGetAllNodesGremlin<GraphIdentity>(
+                "g.e(edge).bothV",
+                new Dictionary<string, object>
+                    {
+                        { "edge", id }
+                    }).ToList();
+            
+            return new Edge
+                {
+                    Id = id,
+                    From = new Identity
+                        {
+                            Id = nodes.Last().Data.Id
+                        },
+                    To = new Identity
+                        {
+                            Id = nodes.First().Data.Id
+                        }
+                };
+        }
 
         /// <summary>
         /// Get nodes we broadcast to

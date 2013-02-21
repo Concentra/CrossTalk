@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 namespace Crosstalk.Core.Models
 {
+    [BsonIgnoreExtraElements]
     public class Message
     {
         [BsonId]
@@ -14,13 +15,21 @@ namespace Crosstalk.Core.Models
         public ObjectId Id { get; set; }
 
         public Edge Edge { get; set; }
+
+        [JsonIgnore]
+        public ObjectId OriginalMessageId { get; set; }
+
+        [BsonIgnore]
+        public Message OriginalMessage { get; set; }
         
         public String Body { get; set; }
         
         public DateTime Created { get; set; }
 
-        public IEnumerable<string> WhiteList { get; set; }
-
         public bool Read { get; set; }
+
+        public int NumberOfShares { get; set; }
+
+
     }
 }

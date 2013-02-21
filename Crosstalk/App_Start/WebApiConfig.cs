@@ -8,6 +8,7 @@ using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
 using Crosstalk.Core.Handlers;
 using Crosstalk.Core.Repositories;
+using Crosstalk.Core.Services;
 using MongoDB.Driver;
 using Neo4jClient;
 
@@ -61,6 +62,10 @@ namespace Crosstalk.Core.App_Start
             builder.Register<IMessageRepository>(c => new MessageRepository(c.Resolve<MongoDatabase>()));
             builder.Register<IEdgeRepository>(c => new EdgeRepository(c.Resolve<IGraphClient>()));
             builder.Register<IIdentityRepository>(c => new IdentityRepository(c.Resolve<MongoDatabase>()));
+
+            builder.Register<IMessageService>(
+                c => new MessageService(c.Resolve<IMessageRepository>(), c.Resolve<IEdgeService>()));
+            builder.Register<IEdgeService>(c => new EdgeService(c.Resolve<IEdgeRepository>(), c.Resolve<IIdentityRepository>()));
 
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
                    .Where(t => !t.IsAbstract && typeof(ApiController).IsAssignableFrom(t))
