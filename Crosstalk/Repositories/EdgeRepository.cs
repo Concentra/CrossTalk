@@ -34,7 +34,7 @@ namespace Crosstalk.Core.Repositories
             {   
                 throw new ArgumentOutOfRangeException("edge", "Not a valid channel type");
             }
-            var channel = (BaseChannel) constructorInfo.Invoke(new object[] { edge.To.GraphId });
+            var channel = (BaseChannel) constructorInfo.Invoke(new object[] { (NodeReference)edge.To.GraphId });
             this.Client.CreateRelationship((NodeReference<GraphIdentity>) edge.From.GraphId, channel);
             return this;
         }
