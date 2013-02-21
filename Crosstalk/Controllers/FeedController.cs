@@ -33,10 +33,10 @@ namespace Crosstalk.Core.Controllers
 
         public IEnumerable<Message> GetById(string id, string exclusions)
         {
-            IEnumerable<dynamic> excludedIdentities = null;
+            IEnumerable<string> excludedIdentities = null;
             try
             {
-                excludedIdentities = JArray.Parse(exclusions).ToObject<IEnumerable<dynamic>>();
+                excludedIdentities = JArray.Parse(exclusions).ToObject<IEnumerable<string>>();
             }
             catch (JsonReaderException ex)
             {
@@ -46,18 +46,14 @@ namespace Crosstalk.Core.Controllers
             var me = this._identityRepository.GetById(id);
             
             /**
-             * Exclude as many edges here as possible.
+             * Pass through nodes to exclude.
              */
-            var edges = new List<Edge>(this._edgeRepository.GetToNode(me, ChannelType.Public, 3)
-                .Where(e => null == excludedIdentities
-                    || !excludedIdentities.Contains(e.Id)));
-
-            IEnumerable<Edge> friends = null;
-
-            if (excludedIdentities.Contains("public"))
-            {
-                friends = this._edgeRepository.GetFromNode(me, ChannelType.Public);
-            }
+            var edges = new List<Edge>(this._edgeRepository.GetToNode(
+                            me,
+                            ChannelType.Public,
+                            null,
+                            excludedIdentities.Contains("public"),
+                            excludedIdentities.Where(i => "public" != i)));
 
             var messages = new OrderedList<Message>((l, n) =>
                 l.Created == n.Created ? 0 : l.Created > n.Created ? 1 : -1);
@@ -65,32 +61,7 @@ namespace Crosstalk.Core.Controllers
             Parallel.ForEach(edges, edge =>
             {
                 edge.To = edge.To.Id == me.Id ? me : this._identityRepository.GetById(edge.To.Id);
-
-                /**
-                 * Exclude messages from people that aren't to a group or me.
-                 */
-                if (excludedIdentities.Contains("network")
-                    && IdentityType.Group != edge.To.Type
-                    && edge.To.Id != me.Id
-                    && edge.From.Id != me.Id)
-                {
-                    return;
-                }
-
                 edge.From = edge.From.Id == me.Id ? me : this._identityRepository.GetById(edge.From.Id);
-
-                /**
-                 * Exclude messages to the public space
-                 */
-                if (excludedIdentities.Contains("public") && IdentityType.Public == edge.To.Type)
-                {
-                    if (null == friends || !friends.Any(e => edge.From.Id == e.To.Id))
-                    {
-                        return;
-                    }
-                }
-
-
                 lock (messages)
                 {
                     messages.AddRange(this._messageService.GetListForEdge(edge));
