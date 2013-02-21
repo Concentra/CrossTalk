@@ -12,6 +12,7 @@ namespace Crosstalk.Core.Repositories
         IEnumerable<Edge> GetFromNode(Identity node, ChannelType type);
         IEnumerable<Edge> GetToNode(Identity node, ChannelType type);
         IEnumerable<Edge> GetToNode(Identity node, ChannelType type, uint depth);
+        IEnumerable<Edge> GetToNode(Identity node, ChannelType type, uint? depth, bool excludePublic, IEnumerable<string> exclusions);
         Edge GetByFromTo(Identity from, Identity to, ChannelType type);
     }
 }

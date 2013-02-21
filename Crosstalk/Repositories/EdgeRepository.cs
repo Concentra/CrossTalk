@@ -101,16 +101,45 @@ namespace Crosstalk.Core.Repositories
 
         public IEnumerable<Edge> GetToNode(Identity node, ChannelType type, uint depth)
         {
+            return this.GetToNode(node, type, depth, true, null);
+        }
+
+        public IEnumerable<Edge> GetToNode(Identity node, ChannelType type, uint? depth, bool excludePublic, IEnumerable<string> exclusions)
+        {
             type = type ?? ChannelType.Public;
-            // g.v(317).as('x').outE.as('edge').inV.loop('x'){it.loops < 3 && it.object.Type != "public"}.path().scatter.dedup.filter{it.Id == null}.id
-            var rels = this.Client.ExecuteGetAllRelationshipsGremlin<Edge>(
-                "g.v(node).as('x').outE(channel).inV.loop('x'){it.loops < " + depth + " && it.object.Type != type}.path().scatter.dedup.filter{it.Id == null}",
+            depth = depth ?? (uint) (ChannelType.Public == type ? 3 : 1);
+
+            var query = string.Format(
+                "g.v(node).as('x').outE(channel).inV.loop('x'){{it.loops < depth && it.object.Type != \"public\"{0}}}.path().scatter.dedup.filter{{it.Id == null}}",
+                null == exclusions
+                    ? ""
+                    :  string.Format("&& !(it.object.Id in [\"{0}\"])", string.Join("\",\"", exclusions)));
+
+            var rels = this.Client.ExecuteGetAllRelationshipsGremlin<Edge>(query,
                 new Dictionary<string, object>()
                     {
+                        {"depth", depth},
                         {"node", node.GraphId},
-                        {"type", Identity.Public},
+                        {"channel", type.ToString()}
+                    }).ToList();
+
+            if (!excludePublic)
+            {
+                /**
+                 * Get all incoming connections to the public space
+                 * TODO: Add index in order to optimise query
+                 * TODO: Cache or batch these results to reduce server load (in the future)
+                 */
+                var publicQuery = "g.V.has(\"Type\", \"public\").inE(channel)";
+                var publicRels = this.Client.ExecuteGetAllRelationshipsGremlin<Edge>(publicQuery, new Dictionary<string, object>()
+                    {
+                        {"depth", depth},
+                        {"node", node.GraphId},
                         {"channel", type.ToString()}
                     });
+                rels.AddRange(publicRels);
+            }
+
             return rels.Select(n => new Edge()
                 {
                     From = new Identity
@@ -126,27 +155,10 @@ namespace Crosstalk.Core.Repositories
                     Id = n.Reference.Id,
                     Type = n.TypeKey
                 });
-            return this.Client
-                       .Get<GraphIdentity>(node.GraphId)
-                       //.As<GraphIdentity>("x")
-                       .InE(Edges.Broadcast)
-                       //.LoopV<GraphIdentity>("x", depth)
-                       //.Where(v => v.Data.Type == Identity.Public)
-                       //.
-                       .Select(n => new Edge()
-                       {
-                           From = new Identity {
-                               OId = ObjectId.Parse(this.Client.Get<GraphIdentity>(n.StartNodeReference).Data.Id),
-                               GraphId = n.StartNodeReference.Id
-                           },
-                           To = node,
-                           Id = n.Reference.Id
-                       });
         }
 
         public Edge GetByFromTo(Identity @from, Identity to, ChannelType type)
         {
-            var rType = type.ToType();
             return this.Client.Get<GraphIdentity>(from.GraphId)
                        .OutE(type)
                        .Where(rel => rel.EndNodeReference == to.GraphId)
