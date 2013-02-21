@@ -28,9 +28,13 @@ namespace Crosstalk.Core.Controllers
             this._graphClient = graphClient;
         }
 
-        public Identity GetById(string id)
+        public dynamic GetById(string id)
         {
             var identity = this._identityRepository.GetById(id);
+            if (HttpUtility.ParseQueryString(this.Request.RequestUri.Query).AllKeys.Where(k => k != "Id").Any())
+            {
+                return this.Search();
+            }
             return identity;
         }
 
