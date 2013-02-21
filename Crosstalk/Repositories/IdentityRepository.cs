@@ -104,6 +104,10 @@ namespace Crosstalk.Core.Repositories
                         {
                             return -1 < i.Others[field].AsBsonArray.IndexOf(BsonDocument.Parse(value));
                         }
+                        if (i.Others[field].IsBsonNull)
+                        {
+                            return false;
+                        }
                         return i.Others[field].AsBsonDocument.ContainsValue(BsonDocument.Parse(value));
                     }
                     return false;
