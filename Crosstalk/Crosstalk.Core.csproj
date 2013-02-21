@@ -149,6 +149,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Collections\OrderedList.cs" />
     <Compile Include="Controllers\EdgeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IdentityController.cs" />
@@ -174,6 +175,10 @@
     <Compile Include="Repositories\PathRepository.cs" />
     <Compile Include="Serializers\IdentitySerializer.cs" />
     <Compile Include="Services\BootstrapService.cs" />
+    <Compile Include="Services\EdgeService.cs" />
+    <Compile Include="Services\IEdgeService.cs" />
+    <Compile Include="Services\IMessageService.cs" />
+    <Compile Include="Services\MessageService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
