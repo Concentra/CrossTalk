@@ -55,10 +55,12 @@ namespace Crosstalk.Core.Controllers
 
         [HttpGet]
         [ActionName("Feed")]
-        public IEnumerable<Message> Feed(string id)
+        public IEnumerable<Message> Feed(string id, IEnumerable<Edge> exclusions)
         {
+            throw new Exception(string.Format("Endpoint deprecated use /api/feed/{0} instead", id));
             var me = this._identityRepository.GetById(id);
-            var edges = new List<Edge>(this._edgeRepository.GetToNode(me, ChannelType.Public, 3));
+            var edges = new List<Edge>(this._edgeRepository.GetToNode(me, ChannelType.Public, 3))
+                .Where(e => null == exclusions || !exclusions.Contains(e));
             var messages = new OrderedList<Message>((l, n) =>
                 l.Created == n.Created ? 0 : l.Created > n.Created ? 1 : -1);
             Parallel.ForEach(edges, edge =>
