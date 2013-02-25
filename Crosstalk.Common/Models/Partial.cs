@@ -51,5 +51,11 @@ namespace Crosstalk.Common.Models
                 return this._instance;
             }
         }
+
+        public static explicit operator T(Partial<T> partial)
+        {
+            return partial.Value;
+        }
+
     }
 }
