@@ -6,7 +6,7 @@ using System.Linq;
 using Crosstalk.Common.Models;
 using Crosstalk.Common.Repositories;
 using Crosstalk.Core.Exceptions;
-using Crosstalk.Core.Models;
+using Crosstalk.Core.Models.Messages;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;

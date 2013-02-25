@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Crosstalk.Common.Models;
-using Crosstalk.Core.Models;
+using Crosstalk.Core.Models.Messages;
 using MongoDB.Bson;
 
 namespace Crosstalk.Core.Repositories

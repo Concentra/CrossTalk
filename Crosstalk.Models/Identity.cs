@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 using JsonReader = Newtonsoft.Json.JsonReader;
 using JsonWriter = Newtonsoft.Json.JsonWriter;
 
-namespace Crosstalk.Core.Models
+namespace Crosstalk.Core.Models.Messages
 {
     [JsonConverter(typeof(IdentityConvertor))]
     public class Identity : IIdentity<Dictionary<string, object>>

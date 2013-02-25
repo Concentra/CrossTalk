@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Crosstalk.Common.Repositories;
-using Crosstalk.Core.Models;
+using Crosstalk.Core.Models.Messages;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using MongoDB.Driver.Linq;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Crosstalk.Core.Models;
+using Crosstalk.Core.Models.Messages;
 using Crosstalk.Core.Repositories;
 
 namespace Crosstalk.Core.Services

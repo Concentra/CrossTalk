@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Crosstalk.Core.Models;
+using Crosstalk.Core.Models.Messages;
 
 namespace Crosstalk.Core.Services
 {

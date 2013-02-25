@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Crosstalk.Core.Models.Convertors;
+using Crosstalk.Core.Models.Messages.Convertors;
+using Crosstalk.Core.Models.Messages.Messages;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace Crosstalk.Core.Models
+namespace Crosstalk.Core.Models.Messages
 {
     [BsonIgnoreExtraElements]
     public class Message
@@ -30,6 +31,7 @@ namespace Crosstalk.Core.Models
 
         public int NumberOfShares { get; set; }
 
+        public IEnumerable<Comment> Comments { get; set; }
 
     }
 }

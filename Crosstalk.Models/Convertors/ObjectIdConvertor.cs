@@ -3,7 +3,7 @@ using MongoDB.Bson;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Crosstalk.Core.Models.Convertors
+namespace Crosstalk.Core.Models.Messages.Convertors
 {
     public class ObjectIdConvertor : JsonConverter
     {

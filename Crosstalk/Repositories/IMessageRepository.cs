@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Crosstalk.Core.Models;
+using Crosstalk.Core.Models.Messages;
 using MongoDB.Bson;
 
 namespace Crosstalk.Core.Repositories

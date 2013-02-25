@@ -1,10 +1,10 @@
 ﻿using System;
-using Crosstalk.Core.Models.Channels;
+using Crosstalk.Core.Models.Messages.Channels;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Crosstalk.Core.Models
+namespace Crosstalk.Core.Models.Messages
 {
     public class Edge
     {

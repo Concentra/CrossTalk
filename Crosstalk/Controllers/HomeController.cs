@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 using Crosstalk.Core.App_Start;
-using Crosstalk.Core.Models;
+using Crosstalk.Core.Models.Messages;
 using Crosstalk.Core.Repositories;
 using Crosstalk.Core.Services;
 using MongoDB.Bson;
