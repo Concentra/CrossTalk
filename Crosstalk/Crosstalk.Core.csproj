@@ -155,6 +155,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IdentityController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
+    <Compile Include="Controllers\PathController.cs" />
     <Compile Include="Enums\Edges.cs" />
     <Compile Include="Enums\Identities.cs" />
     <Compile Include="Exceptions\ObjectNotFoundException.cs" />
@@ -170,7 +171,9 @@
     <Compile Include="Repositories\IEdgeRepository.cs" />
     <Compile Include="Repositories\IIdentityRepository.cs" />
     <Compile Include="Repositories\IMessageRepository.cs" />
+    <Compile Include="Repositories\IPathRepository.cs" />
     <Compile Include="Repositories\MessageRepository.cs" />
+    <Compile Include="Repositories\PathRepository.cs" />
     <Compile Include="Serializers\IdentitySerializer.cs" />
     <Compile Include="Services\BootstrapService.cs" />
     <Compile Include="Services\EdgeService.cs" />
@@ -185,9 +188,11 @@
     </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
