@@ -3,6 +3,10 @@ using System.Web.Http;
 using Crosstalk.Core.Models;
 using Crosstalk.Core.Models.Channels;
 using Crosstalk.Core.Repositories;
+using System;
+using System.Threading.Tasks;
+using Crosstalk.Core.Models.Relationships;
+using System.Linq;
 
 namespace Crosstalk.Core.Controllers
 {
@@ -16,6 +20,46 @@ namespace Crosstalk.Core.Controllers
         {
             this._edgeRepository = edgeRepository;
             this._identityRepository = identityRepository;
+        }
+
+        [HttpPost]
+        public void Save(Edge edge)
+        {
+            var actions = new List<Action>();
+
+            if (0 == edge.From.GraphId)
+            {
+                actions.Add(() =>
+                {
+                    edge.From = this._identityRepository.GetById(edge.From.Id);
+                });
+            }
+            if (0 == edge.To.GraphId)
+            {
+                actions.Add(() =>
+                {
+                    edge.To = this._identityRepository.GetById(edge.To.Id);
+                });
+            }
+            Parallel.Invoke(actions.ToArray());
+            this._edgeRepository.Save(edge);
+        }
+
+        [HttpGet]
+        public IEnumerable<Edge> Both(string id)
+        {
+            var cRM = this._edgeRepository.GetAllNode(this._identityRepository.GetById(id));
+            
+            var edges = cRM.Select(c =>
+                new Edge()
+                {
+                    Id = c.Id,
+                    cType = (ChannelType)c.RelationshipTypeKey,
+                    From = this._identityRepository.GetByGraphId(c.end.Id),
+                    To = this._identityRepository.GetByGraphId(c.start.Id)
+                });
+
+            return edges;
         }
 
         [HttpGet]

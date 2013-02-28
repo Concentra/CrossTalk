@@ -10,7 +10,8 @@ namespace Crosstalk.Core.Models.Channels
         public static class Labels
         {
             public const string Public = "broadcast";
-            public const string Private = "private";            
+            public const string Private = "private";
+            public const string Request = "request";
         }
 
         private readonly Type _channel;
@@ -20,6 +21,7 @@ namespace Crosstalk.Core.Models.Channels
 
         public static readonly ChannelType Private = new ChannelType(1, typeof(PrivateChannel), Labels.Private);
         public static readonly ChannelType Public  = new ChannelType(2, typeof(BroadcastChannel), Labels.Public);
+        public static readonly ChannelType Request = new ChannelType(3, typeof(RequestChannel), Labels.Request);        
 
         private ChannelType(int value, Type channel, string name)
         {
@@ -48,7 +50,7 @@ namespace Crosstalk.Core.Models.Channels
             {
                 return type;
             }
-            throw new InvalidCastException("\"" + key + "\" could not be cast to an ChannelType");
+            throw new InvalidCastException("\"" + key + "\" could not be cast to a ChannelType");
         }
 
         public static implicit operator string(ChannelType type)

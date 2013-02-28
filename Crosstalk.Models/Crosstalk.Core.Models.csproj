@@ -70,7 +70,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Relationships\BaseChannel.cs" />
     <Compile Include="Relationships\BroadcastChannel.cs" />
+    <Compile Include="Relationships\CypherReturnModel.cs" />
     <Compile Include="Relationships\PrivateChannel.cs" />
+    <Compile Include="Relationships\RequestChannel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

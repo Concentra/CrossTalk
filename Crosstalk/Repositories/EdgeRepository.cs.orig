@@ -9,18 +9,11 @@ using Crosstalk.Core.Models.Relationships;
 using MongoDB.Bson;
 using Neo4jClient;
 using Neo4jClient.Gremlin;
-using Neo4jClient.Cypher;
-using System.Collections.ObjectModel;
-using Crosstalk.Core.Services;
 
 namespace Crosstalk.Core.Repositories
 {
     public class EdgeRepository : BaseNeo4JRepository, IEdgeRepository
     {
-        //test
-        private readonly IIdentityRepository _identityRepository;
-        //test
-
         public const string Broadcast = "broadcast";
         public const string Private = "private";
 
@@ -28,21 +21,25 @@ namespace Crosstalk.Core.Repositories
 
         public IEdgeRepository Save(Edge edge, ChannelType type)
         {
-            edge.cType = type;
+            edge.Type = type;
             return this.Save(edge);
         }
 
         public IEdgeRepository Save(Edge edge){
-            if (null == edge.cType)
+            if (null == edge.Type)
             {
                 throw new ArgumentNullException("edge", "Edge has no channel type");
             }
-            var constructorInfo = edge.cType.ToType().GetConstructor(new Type[] {typeof (NodeReference)});
+            var constructorInfo = edge.Type.ToType().GetConstructor(new Type[] {typeof (NodeReference)});
             if (constructorInfo == null)
             {   
                 throw new ArgumentOutOfRangeException("edge", "Not a valid channel type");
             }
+<<<<<<< HEAD
             var channel = (BaseChannel) constructorInfo.Invoke(new object[] { (NodeReference)edge.To.GraphId });
+=======
+            var channel = (BaseChannel) constructorInfo.Invoke(new object[] { (NodeReference) edge.To.GraphId });
+>>>>>>> 50529f50d93ddb8a62de4dcfa2445260bb6ea39f
             this.Client.CreateRelationship((NodeReference<GraphIdentity>) edge.From.GraphId, channel);
             return this;
         }
@@ -91,7 +88,7 @@ namespace Crosstalk.Core.Repositories
                                },
                            From = node,
                            Id = n.Reference.Id,
-                           cType = n.TypeKey
+                           Type = n.TypeKey
                        });
         }
 
@@ -108,45 +105,16 @@ namespace Crosstalk.Core.Repositories
 
         public IEnumerable<Edge> GetToNode(Identity node, ChannelType type, uint depth)
         {
-            return this.GetToNode(node, type, depth, true, null);
-        }
-
-        public IEnumerable<Edge> GetToNode(Identity node, ChannelType type, uint? depth, bool excludePublic, IEnumerable<string> exclusions)
-        {
             type = type ?? ChannelType.Public;
-            depth = depth ?? (uint) (ChannelType.Public == type ? 3 : 1);
-
-            var query = string.Format(
-                "g.v(node).as('x').outE(channel).inV.loop('x'){{it.loops < depth && it.object.Type != \"public\"{0}}}.path().scatter.dedup.filter{{it.Id == null}}",
-                null == exclusions
-                    ? ""
-                    :  string.Format("&& !(it.object.Id in [\"{0}\"])", string.Join("\",\"", exclusions)));
-
-            var rels = this.Client.ExecuteGetAllRelationshipsGremlin<Edge>(query,
+            // g.v(317).as('x').outE.as('edge').inV.loop('x'){it.loops < 3 && it.object.Type != "public"}.path().scatter.dedup.filter{it.Id == null}.id
+            var rels = this.Client.ExecuteGetAllRelationshipsGremlin<Edge>(
+                "g.v(node).as('x').outE(channel).inV.loop('x'){it.loops < " + depth + " && it.object.Type != type}.path().scatter.dedup.filter{it.Id == null}",
                 new Dictionary<string, object>()
                     {
-                        {"depth", depth},
                         {"node", node.GraphId},
-                        {"channel", type.ToString()}
-                    }).ToList();
-
-            if (!excludePublic)
-            {
-                /**
-                 * Get all incoming connections to the public space
-                 * TODO: Add index in order to optimise query
-                 * TODO: Cache or batch these results to reduce server load (in the future)
-                 */
-                var publicQuery = "g.V.has(\"Type\", \"public\").inE(channel)";
-                var publicRels = this.Client.ExecuteGetAllRelationshipsGremlin<Edge>(publicQuery, new Dictionary<string, object>()
-                    {
-                        {"depth", depth},
-                        {"node", node.GraphId},
+                        {"type", Identity.Public},
                         {"channel", type.ToString()}
                     });
-                rels.AddRange(publicRels);
-            }
-
             return rels.Select(n => new Edge()
                 {
                     From = new Identity
@@ -160,12 +128,29 @@ namespace Crosstalk.Core.Repositories
                             GraphId = n.EndNodeReference.Id
                         },
                     Id = n.Reference.Id,
-                    cType = n.TypeKey
+                    Type = n.TypeKey
                 });
+            return this.Client
+                       .Get<GraphIdentity>(node.GraphId)
+                       //.As<GraphIdentity>("x")
+                       .InE(Edges.Broadcast)
+                       //.LoopV<GraphIdentity>("x", depth)
+                       //.Where(v => v.Data.Type == Identity.Public)
+                       //.
+                       .Select(n => new Edge()
+                       {
+                           From = new Identity {
+                               OId = ObjectId.Parse(this.Client.Get<GraphIdentity>(n.StartNodeReference).Data.Id),
+                               GraphId = n.StartNodeReference.Id
+                           },
+                           To = node,
+                           Id = n.Reference.Id
+                       });
         }
 
         public Edge GetByFromTo(Identity @from, Identity to, ChannelType type)
         {
+            var rType = type.ToType();
             return this.Client.Get<GraphIdentity>(from.GraphId)
                        .OutE(type)
                        .Where(rel => rel.EndNodeReference == to.GraphId)
@@ -174,20 +159,8 @@ namespace Crosstalk.Core.Repositories
                                From = from,
                                To = to,
                                Id = e.Reference.Id,
-                               cType = e.TypeKey
+                               Type = e.TypeKey
                            }).FirstOrDefault();
         }
-
-        public IEnumerable<CypherReturnModel> GetAllNode(Identity node)
-        {
-            var cypherResult = new CypherFluentQuery(this.Client)
-                .Start("n", (NodeReference)node.GraphId)
-                .Match("n-[r]-()")
-                .Return<RelationshipInstance<CypherReturnModel>>("r")
-                .Results;
-            var dataResult = cypherResult.Select(r => 
-                new CypherReturnModel(r.StartNodeReference, r.EndNodeReference, r.TypeKey, r.Reference.Id, r.Data));            
-            return dataResult;
-        } 
     }
 }
