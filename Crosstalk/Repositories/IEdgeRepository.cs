@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
-using Crosstalk.Core.Models.Messages;
+using Crosstalk.Common;
+using Crosstalk.Core.Models;
 using Crosstalk.Core.Models.Messages.Channels;
 
 namespace Crosstalk.Core.Repositories
 {
-    public interface IEdgeRepository
+    public interface IEdgeRepository : IPartialResolver<Edge>
     {
         IEdgeRepository Save(Edge edge, ChannelType type);
         IEdgeRepository Save(Edge edge);

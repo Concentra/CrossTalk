@@ -3,10 +3,11 @@ using Crosstalk.Core.Models.Messages.Channels;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Crosstalk.Common.Models;
 
-namespace Crosstalk.Core.Models.Messages
+namespace Crosstalk.Core.Models
 {
-    public class Edge
+    public class Edge/* : ISupportsPartial*/
     {
         public long Id { get; set; }
         

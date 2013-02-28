@@ -1,4 +1,4 @@
-﻿namespace Crosstalk.Core.Models.Messages
+﻿namespace Crosstalk.Core.Models
 {
     public class GraphIdentity
     {

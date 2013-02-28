@@ -1,20 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Crosstalk.Common.Convertors;
 using Crosstalk.Common.Models;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Serializers;
+using Newtonsoft.Json;
 
-namespace Crosstalk.Core.Models.Messages.Messages
+namespace Crosstalk.Core.Models.Messages
 {
-    public class Comment : IComment
+    public class Comment : IComment<Identity>
     {
-        public Partial<IIdentity> Author { get; set; }
+        public Partial<Identity> Author { get; set; }
+        
         public string Body { get; set; }
+        
         public DateTime Created { get; set; }
+
+        [JsonConverter(typeof(ReportableStatusConvertor))]
         public ReportableStatus Status { get; set; }
+
+        [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
+        public Partial<Message> ParentMessage { get; set; }
     }
     /*public class IIdentityPartialSerializer : BsonBaseSerializer
     {

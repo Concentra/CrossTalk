@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Crosstalk.Core.Models.Messages;
+using Crosstalk.Core.Models;
 using Crosstalk.Core.Repositories;
 
 namespace Crosstalk.Core.Services
@@ -19,7 +19,7 @@ namespace Crosstalk.Core.Services
             this._identityRepository = identityRepository;
         }
 
-        public Edge GetById(long id)
+        public Edge GetById(string id)
         {
             var edge = this._edgeRepository.GetById(id);
             Parallel.Invoke(() => edge.From = this._identityRepository.GetById(edge.From.Id),

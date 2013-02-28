@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crosstalk.Common.Repositories
+namespace Crosstalk.Common
 {
-    public interface IPartialRepository<T>
+
+    public interface IPartialResolver<T>
     {
         T GetById(string id);
     }

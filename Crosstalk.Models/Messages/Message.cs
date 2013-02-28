@@ -1,24 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using Crosstalk.Common.Models;
 using Crosstalk.Core.Models.Messages.Convertors;
-using Crosstalk.Core.Models.Messages.Messages;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
+using Crosstalk.Common.Convertors;
 
 namespace Crosstalk.Core.Models.Messages
 {
     [BsonIgnoreExtraElements]
-    public class Message
+    public class Message : ISupportsPartial
     {
         [BsonId]
-        [JsonConverter(typeof(ObjectIdConvertor))]
-        public ObjectId Id { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
 
         public Edge Edge { get; set; }
 
         [JsonIgnore]
-        public ObjectId OriginalMessageId { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string OriginalMessageId { get; set; }
 
         [BsonIgnore]
         public Message OriginalMessage { get; set; }
@@ -33,5 +35,7 @@ namespace Crosstalk.Core.Models.Messages
 
         public IEnumerable<Comment> Comments { get; set; }
 
+        [JsonConverter(typeof(ReportableStatusConvertor))]
+        public ReportableStatus Status { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Crosstalk.Common.Models;
+using Crosstalk.Core.Models;
 using Crosstalk.Core.Models.Messages;
 using Crosstalk.Core.Models.Messages.Channels;
 using Crosstalk.Core.Services;

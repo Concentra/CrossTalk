@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Crosstalk.Core.Models;
 using Crosstalk.Core.Models.Messages;
 using Crosstalk.Core.Repositories;
 using MongoDB.Bson;
+using Crosstalk.Common.Models;
 
 namespace Crosstalk.Core.Services
 {
@@ -32,15 +34,22 @@ namespace Crosstalk.Core.Services
             Parallel.ForEach(list,
                              m =>
                              {
-                                 if (ObjectId.Empty != m.OriginalMessageId)
+                                 if (null != m.OriginalMessageId && !ObjectId.Empty.ToString().Equals(m.OriginalMessageId))
                                  {
-                                     m.OriginalMessage = this._messageRepository.Get(m.OriginalMessageId.ToString());
-                                     if (null != m.OriginalMessage.Edge)
+                                     m.OriginalMessage = this._messageRepository.GetById(m.OriginalMessageId);
+                                     if (null == m.OriginalMessage)
                                      {
-                                         m.OriginalMessage.Edge = this._edgeService.GetById(m.OriginalMessage.Edge.Id);
+                                         m.Status = ReportableStatus.Missing;
                                      }
-                                     m.OriginalMessage.NumberOfShares =
-                                         (int) this._messageRepository.CountShares(m.OriginalMessageId.ToString());
+                                     else
+                                     {
+                                         if (null != m.OriginalMessage.Edge)
+                                         {
+                                             m.OriginalMessage.Edge = this._edgeService.GetById(m.OriginalMessage.Edge.Id.ToString());
+                                         }
+                                         m.OriginalMessage.NumberOfShares =
+                                             (int)this._messageRepository.CountShares(m.OriginalMessageId);
+                                     }
                                  }
                                  m.Edge = edge;
                              });

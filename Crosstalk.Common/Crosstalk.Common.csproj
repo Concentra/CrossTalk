@@ -67,24 +67,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\PartialRepositoryAttribute.cs" />
     <Compile Include="Client\ApiClient.cs" />
     <Compile Include="Client\IApiClient.cs" />
     <Compile Include="Convertors\PartialConvertor.cs" />
     <Compile Include="Convertors\PartialConvertorProxy.cs" />
+    <Compile Include="Convertors\ReportableStatusConvertor.cs" />
     <Compile Include="Exceptions\HttpInternalServerErrorException.cs" />
     <Compile Include="Exceptions\HttpNotFoundException.cs" />
     <Compile Include="Models\IComment.cs" />
     <Compile Include="Models\IdentityTypes.cs" />
-    <Compile Include="Models\IPartial.cs" />
+    <Compile Include="Models\ISupportsPartial.cs" />
     <Compile Include="Models\ReportableStatus.cs" />
     <Compile Include="Models\Partial.cs" />
     <Compile Include="Repositories\BaseMongoRepository.cs" />
     <Compile Include="Repositories\IMongoRepository.cs" />
     <Compile Include="Models\IIdentity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\IPartialRepository.cs" />
-    <Compile Include="Repositories\IRepositoryFactory.cs" />
-    <Compile Include="RepositoryFactory.cs" />
+    <Compile Include="IPartialResolver.cs" />
+    <Compile Include="Repositories\IRepositoryStore.cs" />
+    <Compile Include="Repositories\RepositoryFactory.cs" />
+    <Compile Include="RepositoryStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Crosstalk.Core.Collections;
 using Crosstalk.Core.Exceptions;
+using Crosstalk.Core.Models;
 using Crosstalk.Core.Models.Messages;
 using Crosstalk.Core.Models.Messages.Channels;
 using Crosstalk.Core.Repositories;
@@ -120,7 +121,7 @@ namespace Crosstalk.Core.Controllers
         [ActionName("Get")]
         public Message Get(string id)
         {
-            return this._messageRepository.Get(id);
+            return this._messageRepository.GetById(id);
         }
 
         // POST api/messages

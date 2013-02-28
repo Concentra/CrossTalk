@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using Crosstalk.Core.Enums;
-using Crosstalk.Core.Models.Messages;
+using Crosstalk.Core.Models;
 using Crosstalk.Core.Models.Messages.Channels;
 using Crosstalk.Core.Models.Messages.Relationships;
 using MongoDB.Bson;
@@ -38,6 +38,11 @@ namespace Crosstalk.Core.Repositories
             var channel = (BaseChannel) constructorInfo.Invoke(new object[] { (NodeReference) edge.To.GraphId });
             this.Client.CreateRelationship((NodeReference<GraphIdentity>) edge.From.GraphId, channel);
             return this;
+        }
+
+        public Edge GetById(string id)
+        {
+            return this.GetById(long.Parse(id));
         }
 
         public Edge GetById(long id)

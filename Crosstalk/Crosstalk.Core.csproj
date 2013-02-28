@@ -152,6 +152,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Collections\OrderedList.cs" />
+    <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\EdgeController.cs" />
     <Compile Include="Controllers\FeedController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -173,7 +174,6 @@
     <Compile Include="Repositories\IIdentityRepository.cs" />
     <Compile Include="Repositories\IMessageRepository.cs" />
     <Compile Include="Repositories\MessageRepository.cs" />
-    <Compile Include="RepositoryFactory.cs" />
     <Compile Include="Serializers\IdentitySerializer.cs" />
     <Compile Include="Services\BootstrapService.cs" />
     <Compile Include="Services\EdgeService.cs" />

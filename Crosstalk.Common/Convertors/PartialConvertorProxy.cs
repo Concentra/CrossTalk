@@ -10,21 +10,27 @@ namespace Crosstalk.Common.Convertors
 {
     public class PartialConvertorProxy : JsonConverter
     {
+        private JsonConverter GetConvertor(Type type)
+        {
+            if (!type.IsGenericType) {
+                throw new ArgumentException("Type is not generic", "type");
+            }
+            return (JsonConverter) Activator.CreateInstance(typeof(PartialConvertor<>).MakeGenericType(type.GetGenericArguments()));
+        }
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var partial = (Partial)value;
-            partial.Convertor.WriteJson(writer, value, serializer);
+            this.GetConvertor(value.GetType()).WriteJson(writer, value, serializer);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var proxied = (Partial) Activator.CreateInstance(objectType);
-            return proxied.Convertor.ReadJson(reader, objectType, existingValue, serializer); 
+            return this.GetConvertor(objectType).ReadJson(reader, objectType, existingValue, serializer); 
         }
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(Partial).IsAssignableFrom(objectType);
+            return typeof(Partial<>).IsAssignableFrom(objectType);
         }
     }
 }

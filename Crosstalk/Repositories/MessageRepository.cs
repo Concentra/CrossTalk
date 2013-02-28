@@ -4,17 +4,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Crosstalk.Common.Repositories;
+using Crosstalk.Core.Models;
 using Crosstalk.Core.Models.Messages;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using MongoDB.Driver.Linq;
 using MongoDB.Bson;
+using Crosstalk.Common.Models;
 
 namespace Crosstalk.Core.Repositories
 {
     public class MessageRepository : BaseMongoRepository<Message>, IMessageRepository
     {
         public MessageRepository(MongoDatabase database) : base(database) {}
+
+        public void Moderate(string messageId)
+        {
+            var msg = this.GetById(messageId);
+            msg.Status = ReportableStatus.Removed;
+            this.Save(msg);
+        }
+
+        public void Remove(string messageId)
+        {
+            var msg = this.GetById(messageId);
+            msg.Status = ReportableStatus.Missing;
+            this.Save(msg);
+        }
+
+        public void Report(string messageId)
+        {
+            var msg = this.GetById(messageId);
+            msg.Status = ReportableStatus.Reported;
+            this.Save(msg);
+        }
 
         protected override string Collection
         {
@@ -45,14 +68,16 @@ namespace Crosstalk.Core.Repositories
             return results.ToList();
         }
 
-        public Message Get(string messageId)
+        public Message GetById(string messageId)
         {
-            return this.GetCollection().AsQueryable().Single(m => m.Id == ObjectId.Parse(messageId));
+            return this.GetCollection().AsQueryable().SingleOrDefault(m => m.Id == messageId);
         }
 
         public bool Save(Message message)
         {
-            message.Id = ObjectId.GenerateNewId();
+            message.Id = null == message.Id || ObjectId.Empty.ToString().Equals(message.Id)
+                ? ObjectId.GenerateNewId().ToString()
+                : message.Id;
             message.Created = DateTime.Now;
             if (null != message.OriginalMessage)
             {

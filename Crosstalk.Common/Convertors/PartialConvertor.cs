@@ -9,21 +9,47 @@ using Newtonsoft.Json.Linq;
 
 namespace Crosstalk.Common.Convertors
 {
-    class PartialConvertor<T> : JsonConverter where T : class
+    class PartialConvertor<T> : JsonConverter where T : class, ISupportsPartial
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var obj = (Partial<T>) value;
-            serializer.Serialize(writer, obj.Id);
+            if (obj.IsPartial)
+            {
+                serializer.Serialize(writer, new
+                {
+                    Id = obj.Id,
+                    _Partial = true
+                });
+            }
+            else
+            {
+                serializer.Serialize(writer, obj.Value);
+            }
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var obj = JObject.Load(reader);
-            var res = new Partial<T>
+            Partial<T> res;
+
+            var obj = serializer.Deserialize<dynamic>(reader);
+            if (null == obj)
             {
-                Id = obj.GetValue("Id").Value<string>()
-            };
+                return null;
+            }
+
+            if (null != obj._Partial)
+            {
+                res = new Partial<T>
+                {
+                    Id = obj.Id.ToObject<string>()
+                };
+            }
+            else
+            {
+                res = new Partial<T>(obj.ToObject<T>());
+            }
+
             return res;
         }
 
