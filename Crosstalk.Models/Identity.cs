@@ -151,7 +151,12 @@ namespace Crosstalk.Core.Models
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var obj = JObject.Load(reader);
+            var obj = serializer.Deserialize<dynamic>(reader);
+            if (null == obj)
+            {
+                return null;
+            }
+
             var target = new Identity();
             serializer.Populate(obj.CreateReader(), target);
             if (null != target.Data && target.Data.Any())

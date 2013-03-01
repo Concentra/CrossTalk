@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Crosstalk.Core.Models;
-using Crosstalk.Core.Models.Channels;
+using Crosstalk.Core.Models.Messages.Channels;
 using Crosstalk.Core.Repositories;
 using MongoDB.Bson;
 using Neo4jClient;

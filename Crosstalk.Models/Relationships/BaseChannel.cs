@@ -1,6 +1,6 @@
 using Neo4jClient;
 
-namespace Crosstalk.Core.Models.Relationships
+namespace Crosstalk.Core.Models.Messages.Relationships
 {
     public abstract class BaseChannel :
         Relationship,

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Crosstalk.Core.Models.Relationships;
+using Crosstalk.Core.Models.Messages.Relationships;
 
-
-namespace Crosstalk.Core.Models.Channels
+namespace Crosstalk.Core.Models.Messages.Channels
 {
     public sealed class ChannelType
     {
