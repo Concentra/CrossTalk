@@ -9,7 +9,7 @@ using Crosstalk.Core.Collections;
 using Crosstalk.Core.Exceptions;
 using Crosstalk.Core.Models;
 using Crosstalk.Core.Models.Messages;
-using Crosstalk.Core.Models.Messages.Channels;
+using Crosstalk.Core.Models.Channels;
 using Crosstalk.Core.Repositories;
 using Crosstalk.Core.Services;
 using MongoDB.Bson;

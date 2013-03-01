@@ -1,5 +1,5 @@
 ﻿using System;
-using Crosstalk.Core.Models.Messages.Channels;
+using Crosstalk.Core.Models.Channels;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

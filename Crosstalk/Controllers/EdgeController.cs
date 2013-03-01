@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
 using Crosstalk.Core.Models;
-using Crosstalk.Core.Models.Messages.Channels;
+using Crosstalk.Core.Models.Channels;
 using Crosstalk.Core.Repositories;
 
 namespace Crosstalk.Core.Controllers

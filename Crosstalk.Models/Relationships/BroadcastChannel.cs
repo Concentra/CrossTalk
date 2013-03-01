@@ -1,7 +1,7 @@
-using Crosstalk.Core.Models.Messages.Channels;
+using Crosstalk.Core.Models.Channels;
 using Neo4jClient;
 
-namespace Crosstalk.Core.Models.Messages.Relationships
+namespace Crosstalk.Core.Models.Relationships
 {
     public class BroadcastChannel : BaseChannel
     {

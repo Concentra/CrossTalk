@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Crosstalk.Common;
 using Crosstalk.Core.Models;
-using Crosstalk.Core.Models.Messages.Channels;
+using Crosstalk.Core.Models.Channels;
 
 namespace Crosstalk.Core.Repositories
 {
