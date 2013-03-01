@@ -66,26 +66,33 @@ namespace Crosstalk.Core.Services
 
         public IEnumerable<IReportable> All()
         {
-            var messages = this._context.Resolve<IMessageRepository>().Search(new System.Collections.Specialized.NameValueCollection {
-                { "Status", ReportableStatus.Reported }
-            }).ToList();
-            //var actions = new List<Action>();
-            //foreach (var msg in messages)
-            //{
-            //    actions.Add(() =>
-            //    {
-            //        var reports = this._reportRepository.GetReportsForParent(ReportType.Message, msg.Id);
-            //        lock (messages)
-            //        {
-            //            messages.Where(m => m.Id == msg.Id).ToList().ForEach(m => m.Reports = reports);
-            //        }
-            //    });
-            //}
-            //Parallel.Invoke(actions.ToArray());
-            Parallel.ForEach<Message>(messages, m => {
-                m.Reports = this._reportRepository.GetReportsForParent(ReportType.Message, m.Id);
-            });
-            return messages;
+            IEnumerable<IReportable> messages = null;
+            IEnumerable<IReportable> comments = null;
+
+            Parallel.Invoke(
+                () =>
+                {
+                    messages = this._context.Resolve<IMessageRepository>()
+                        .Search(new System.Collections.Specialized.NameValueCollection {
+                                { "Status", ReportableStatus.Reported }
+                            }).ToList();
+                    Parallel.ForEach<IReportable>(messages, m =>
+                        {
+                            m.Reports = this._reportRepository.GetReportsForParent(ReportType.Message, m.Id);
+                        });
+                },
+                () =>
+                {
+                    comments = this._context.Resolve<ICommentRepository>()
+                        .Search(new System.Collections.Specialized.NameValueCollection {
+                                { "Status", ReportableStatus.Reported }
+                            }).ToList();
+                    Parallel.ForEach<IReportable>(comments, c =>
+                        {
+                            c.Reports = this._reportRepository.GetReportsForParent(ReportType.Comment, c.Id);
+                        });
+                });
+            return messages.Union(comments);
         }
     }
 }

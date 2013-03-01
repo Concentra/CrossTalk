@@ -36,11 +36,19 @@ namespace Crosstalk.Core.Repositories
                 throw new Exception("ParentMessage is required to save comment");
             }
             var message = comment.ParentMessage.Value;
+            comment.Created = DateTime.Now;
             var comments = null == message.Comments
                 ? new List<Comment>()
                 : (message.Comments as List<Comment>
                     ?? message.Comments.ToList<Comment>());
-            comments.RemoveAll(c => c.Id == comment.Id);
+            if (null == comment.Id || ObjectId.Empty.ToString().Equals(comment.Id))
+            {
+                comment.Id = ObjectId.GenerateNewId().ToString();
+            }
+            else
+            {
+                comments.RemoveAll(c => c.Id == comment.Id);
+            }
             comments.Add(comment);
             message.Comments = comments;
             this._messageRepository.Save(message);
@@ -72,6 +80,7 @@ namespace Crosstalk.Core.Repositories
         public IEnumerable<Comment> Search(NameValueCollection parameters)
         {
             var queries = new List<IMongoQuery>();
+            var refiningQueries = new List<IMongoQuery>();
 
             foreach (var key in parameters.AllKeys)
             {
@@ -80,10 +89,12 @@ namespace Crosstalk.Core.Repositories
                 if (vals.Count() > 1)
                 {
                     queries.Add(Query.In(key, vals.Select(BsonValue.Create)));
+                    refiningQueries.Add(Query.In("Comments." + key, vals.Select(BsonValue.Create)));
                 }
                 else if (vals.Count() == 1)
                 {
                     queries.Add(Query.EQ(key, BsonValue.Create(vals.First())));
+                    refiningQueries.Add(Query.EQ("Comments." + key, BsonValue.Create(vals.First())));
                 }
             }
 
@@ -110,6 +121,13 @@ namespace Crosstalk.Core.Repositories
                     {
                         {
                             "$unwind", "$Comments"
+                        }
+                    },
+                new BsonDocument
+                    {
+                        {
+                            "$match",
+                            Query.And(refiningQueries).ToBsonDocument()
                         }
                     }
             };

@@ -149,7 +149,7 @@ namespace Crosstalk.Core.Controllers
         }
 
         // DELETE api/values/5
-        public void Delete(string id, ReportRevokeActionType action)
+        public void Delete(string id, string action)
         {
             if (ReportRevokeActionType.Revoke == action)
             {

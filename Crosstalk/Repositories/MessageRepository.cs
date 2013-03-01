@@ -50,7 +50,7 @@ namespace Crosstalk.Core.Repositories
         public void Revoke(string id)
         {
             var msg = this.GetById(id);
-            msg.Status = ReportableStatus.Missing;
+            msg.Status = ReportableStatus.Revoked;
             this.Save(msg);
         }
 
@@ -97,14 +97,17 @@ namespace Crosstalk.Core.Repositories
 
         public bool Save(Message message)
         {
-            message.Id = null == message.Id || ObjectId.Empty.ToString().Equals(message.Id)
-                ? ObjectId.GenerateNewId().ToString()
-                : message.Id;
-            message.Created = DateTime.Now;
+            if (null == message.Id || ObjectId.Empty.ToString().Equals(message.Id))
+            {
+                message.Id = ObjectId.GenerateNewId().ToString();
+                message.Created = DateTime.Now;
+            }
+
             if (null != message.OriginalMessage)
             {
                 message.OriginalMessageId = message.OriginalMessage.Id;
             }
+
             return (this.GetCollection().AsQueryable().Any(m => m.Id == message.Id)
                 ? this.GetCollection().Save(message)
                 : this.GetCollection().Insert(message)).Ok;

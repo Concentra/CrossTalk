@@ -40,7 +40,7 @@ namespace Crosstalk.Core.Controllers
             return this._repository.Search(nvc);
         }
 
-        public void Delete(string id, ReportRevokeActionType action)
+        public void Delete(string id, string action)
         {
             if (ReportRevokeActionType.Revoke == action)
             {
@@ -49,6 +49,10 @@ namespace Crosstalk.Core.Controllers
             else if (ReportRevokeActionType.Moderate == action)
             {
                 this._repository.Moderate(id);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("Action is not recognised", "action");
             }
         }
 
