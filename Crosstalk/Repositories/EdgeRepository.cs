@@ -47,6 +47,21 @@ namespace Crosstalk.Core.Repositories
             return this;
         }
 
+
+        public IEdgeRepository Delete(Edge edge)
+        {
+            return this.Delete(edge.Id);
+        }
+
+        public IEdgeRepository Delete(long id)
+        {
+            new CypherFluentQuery(this.Client)
+                .Start("r", (RelationshipReference)id)
+                .Delete("r")
+                .ExecuteWithoutResults();
+            return this;
+        }
+
         public Edge GetById(long id)
         {
             var nodes = this.Client.ExecuteGetAllNodesGremlin<GraphIdentity>(
@@ -61,11 +76,13 @@ namespace Crosstalk.Core.Repositories
                     Id = id,
                     From = new Identity
                         {
-                            Id = nodes.Last().Data.Id
+                            Id = nodes.Last().Data.Id,
+                            GraphId = nodes.Last().Reference.Id
                         },
                     To = new Identity
                         {
-                            Id = nodes.First().Data.Id
+                            Id = nodes.First().Data.Id,
+                            GraphId = nodes.First().Reference.Id
                         }
                 };
         }

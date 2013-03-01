@@ -9,6 +9,8 @@ namespace Crosstalk.Core.Repositories
     {
         IEdgeRepository Save(Edge edge, ChannelType type);
         IEdgeRepository Save(Edge edge);
+        IEdgeRepository Delete(Edge edge);
+        IEdgeRepository Delete(long id);
         Edge GetById(long id);
         IEnumerable<CypherReturnModel> GetAllNode(Identity node);
         IEnumerable<Edge> GetFromNode(Identity node, ChannelType type);

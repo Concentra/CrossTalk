@@ -7,6 +7,7 @@ using System;
 using System.Threading.Tasks;
 using Crosstalk.Core.Models.Relationships;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Crosstalk.Core.Controllers
 {
@@ -20,6 +21,35 @@ namespace Crosstalk.Core.Controllers
         {
             this._edgeRepository = edgeRepository;
             this._identityRepository = identityRepository;
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        public void Delete(JObject obj)
+        {
+            var edgeId = obj.GetValue("edgeId").ToObject<long>();
+            this._edgeRepository.Delete(edgeId);
+        }
+
+        [HttpPost]
+        [ActionName("Accept")]
+        public void Accept(JObject obj)
+        {
+            var edgeId = obj.GetValue("edgeId").ToObject<long>();
+            var originalEdge = this._edgeRepository.GetById(edgeId);
+            var forwardEdge = new Edge() { 
+                From = originalEdge.From,
+                To = originalEdge.To,
+                cType = ChannelType.Public };
+            var reverseEdge = new Edge()
+            {
+                From = originalEdge.To,
+                To = originalEdge.From,
+                cType = ChannelType.Public
+            };
+            this._edgeRepository.Save(forwardEdge);
+            this._edgeRepository.Save(reverseEdge);
+            this._edgeRepository.Delete(edgeId);
         }
 
         [HttpPost]
@@ -55,8 +85,8 @@ namespace Crosstalk.Core.Controllers
                 {
                     Id = c.Id,
                     cType = (ChannelType)c.RelationshipTypeKey,
-                    From = this._identityRepository.GetByGraphId(c.end.Id),
-                    To = this._identityRepository.GetByGraphId(c.start.Id)
+                    From = this._identityRepository.GetByGraphId(c.start.Id),
+                    To = this._identityRepository.GetByGraphId(c.end.Id)
                 });
 
             return edges;
