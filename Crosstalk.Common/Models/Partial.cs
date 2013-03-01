@@ -8,7 +8,7 @@ using Crosstalk.Common.Convertors;
 namespace Crosstalk.Common.Models
 {
 
-    public abstract class Partial
+    public class Partial
     {
         public string Id { get; set; }
     }

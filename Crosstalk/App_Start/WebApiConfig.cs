@@ -17,6 +17,7 @@ using Crosstalk.Common.Repositories;
 using Crosstalk.Core.Models;
 using Crosstalk.Core.Models.Messages;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Options;
 
 namespace Crosstalk.Core.App_Start
 {
@@ -68,12 +69,16 @@ namespace Crosstalk.Core.App_Start
             builder.Register<IRepositoryStore>(c => RepositoryStore.GetInstance()).SingleInstance();
 
             builder.Register<IMessageRepository>(c => new MessageRepository(c.Resolve<MongoDatabase>()));
+            builder.Register<ICommentRepository>(c => new CommentRepository(c.Resolve<MongoDatabase>(), c.Resolve<IMessageRepository>()));
             builder.Register<IEdgeRepository>(c => new EdgeRepository(c.Resolve<IGraphClient>()));
             builder.Register<IIdentityRepository>(c => new IdentityRepository(c.Resolve<MongoDatabase>()));
+            builder.Register<IReportRepository>(c => new ReportRepository(c.Resolve<MongoDatabase>()));
 
             builder.Register<IMessageService>(
                 c => new MessageService(c.Resolve<IMessageRepository>(), c.Resolve<IEdgeService>()));
-            builder.Register<IEdgeService>(c => new EdgeService(c.Resolve<IEdgeRepository>(), c.Resolve<IIdentityRepository>()));
+            builder.Register<IEdgeService>(
+                c => new EdgeService(c.Resolve<IEdgeRepository>(), c.Resolve<IIdentityRepository>()));
+            builder.RegisterType<ReportService>().As<IReportService>();
 
             //builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
             //       .Where(t => !t.IsAbstract && (t.Name.EndsWith("Repository") || t.Name.EndsWith("Service")))
@@ -100,10 +105,9 @@ namespace Crosstalk.Core.App_Start
                 .Add<Identity>(() => container.Resolve<IIdentityRepository>());
 
             BsonClassMap.RegisterClassMap<Partial>(cm =>
-            {
-                cm.MapIdProperty(c => c.Id);
-            });
-
+                {
+                    cm.MapIdProperty(c => c.Id);
+                });
 
         }
     }

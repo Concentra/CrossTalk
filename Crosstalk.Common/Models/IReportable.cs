@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Crosstalk.Common.Models
 {
-    public interface IComment<TIdentity> : IReportable where TIdentity : class, IIdentity
+    public interface IReportable : ISupportsPartial
     {
-        Partial<TIdentity> Author { get; set; }
-        String Body { get; set; }
-        DateTime Created { get; set; }
+        IEnumerable<Report> Reports { get; set; }
         ReportableStatus Status { get; set; }
+        string Body { get; set; }
     }
 }

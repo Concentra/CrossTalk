@@ -10,7 +10,7 @@ namespace Crosstalk.Common.Models
     {
         private readonly string _name;
         private readonly int _value;
-        private static readonly Dictionary<string, IdentityType> Instances = new Dictionary<string, IdentityType>();  
+        private static readonly Dictionary<string, IdentityType> instances = new Dictionary<string, IdentityType>();  
 
         public static readonly IdentityType Person = new IdentityType(1, "person");
         public static readonly IdentityType Group = new IdentityType(2, "group");
@@ -20,7 +20,7 @@ namespace Crosstalk.Common.Models
         {
             this._name = name;
             this._value = value;
-            Instances[name] = this;
+            instances[name] = this;
         }
 
         public override string ToString()
@@ -31,7 +31,7 @@ namespace Crosstalk.Common.Models
         public static implicit operator IdentityType(string str)
         {
             IdentityType type;
-            if (Instances.TryGetValue(str, out type))
+            if (instances.TryGetValue(str, out type))
             {
                 return type;
             }

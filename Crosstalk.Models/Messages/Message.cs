@@ -6,11 +6,12 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Crosstalk.Common.Convertors;
+using System.ComponentModel;
 
 namespace Crosstalk.Core.Models.Messages
 {
     [BsonIgnoreExtraElements]
-    public class Message : ISupportsPartial
+    public class Message : IReportable
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -35,6 +36,9 @@ namespace Crosstalk.Core.Models.Messages
 
         public IEnumerable<Comment> Comments { get; set; }
 
+        public IEnumerable<Report> Reports { get; set; }
+
+        [DefaultValue(typeof(ReportableStatus), "none")]
         [JsonConverter(typeof(ReportableStatusConvertor))]
         public ReportableStatus Status { get; set; }
     }

@@ -8,6 +8,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Serializers;
 using Newtonsoft.Json;
+using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Crosstalk.Core.Models.Messages
 {
@@ -24,6 +25,10 @@ namespace Crosstalk.Core.Models.Messages
 
         [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
         public Partial<Message> ParentMessage { get; set; }
+        public IEnumerable<Report> Reports { get; set;}
+
+        [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
+        public string Id { get; set; }
     }
     /*public class IIdentityPartialSerializer : BsonBaseSerializer
     {
