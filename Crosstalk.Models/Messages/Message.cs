@@ -39,7 +39,7 @@ namespace Crosstalk.Core.Models.Messages
         public IEnumerable<Report> Reports { get; set; }
 
         [DefaultValue(typeof(ReportableStatus), "none")]
-        [JsonConverter(typeof(ReportableStatusConvertor))]
-        public ReportableStatus Status { get; set; }
+        //[JsonConverter(typeof(ReportableStatusConvertor))]
+        public string Status { get; set; }
     }
 }

@@ -11,6 +11,6 @@ namespace Crosstalk.Common.Models
         Partial<TIdentity> Author { get; set; }
         String Body { get; set; }
         DateTime Created { get; set; }
-        ReportableStatus Status { get; set; }
+        string Status { get; set; }
     }
 }

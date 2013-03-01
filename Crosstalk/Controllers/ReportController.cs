@@ -35,7 +35,7 @@ namespace Crosstalk.Core.Controllers
             {
                 return this._reportRepository.GetById(nvc["id"]);
             }
-            return this._reportRepository.All();
+            return this._reportService.All();
         }
 
         public void Delete(string id)

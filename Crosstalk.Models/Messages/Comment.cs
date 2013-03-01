@@ -9,6 +9,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Serializers;
 using Newtonsoft.Json;
 using MongoDB.Bson.Serialization.IdGenerators;
+using System.ComponentModel;
 
 namespace Crosstalk.Core.Models.Messages
 {
@@ -20,8 +21,9 @@ namespace Crosstalk.Core.Models.Messages
         
         public DateTime Created { get; set; }
 
-        [JsonConverter(typeof(ReportableStatusConvertor))]
-        public ReportableStatus Status { get; set; }
+        [DefaultValue(typeof(ReportableStatus), "none")]
+        //[JsonConverter(typeof(ReportableStatusConvertor))]
+        public string Status { get; set; }
 
         [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
         public Partial<Message> ParentMessage { get; set; }

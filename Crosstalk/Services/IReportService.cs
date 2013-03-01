@@ -11,5 +11,6 @@ namespace Crosstalk.Core.Services
         void Report(Report report);
         void Ignore(string id);
         void Remove(string id);
+        IEnumerable<IReportable> All();
     }
 }

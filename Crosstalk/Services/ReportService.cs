@@ -1,9 +1,11 @@
 ﻿using Autofac;
 using Crosstalk.Common.Models;
+using Crosstalk.Core.Models.Messages;
 using Crosstalk.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Crosstalk.Core.Services
@@ -60,6 +62,30 @@ namespace Crosstalk.Core.Services
             {
                 this._context.Resolve<IMessageRepository>().Moderate(report.Parent.Id);
             }
+        }
+
+        public IEnumerable<IReportable> All()
+        {
+            var messages = this._context.Resolve<IMessageRepository>().Search(new System.Collections.Specialized.NameValueCollection {
+                { "Status", ReportableStatus.Reported }
+            }).ToList();
+            //var actions = new List<Action>();
+            //foreach (var msg in messages)
+            //{
+            //    actions.Add(() =>
+            //    {
+            //        var reports = this._reportRepository.GetReportsForParent(ReportType.Message, msg.Id);
+            //        lock (messages)
+            //        {
+            //            messages.Where(m => m.Id == msg.Id).ToList().ForEach(m => m.Reports = reports);
+            //        }
+            //    });
+            //}
+            //Parallel.Invoke(actions.ToArray());
+            Parallel.ForEach<Message>(messages, m => {
+                m.Reports = this._reportRepository.GetReportsForParent(ReportType.Message, m.Id);
+            });
+            return messages;
         }
     }
 }
