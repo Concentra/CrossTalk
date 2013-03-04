@@ -69,7 +69,7 @@ namespace Crosstalk.Core.Repositories
         }
 
         /// <summary>
-        /// Get nodes we broadcast to
+        /// Get nodes we broadcast from
         /// </summary>
         /// <param name="node"></param>
         /// <param name="type"></param>
@@ -79,7 +79,7 @@ namespace Crosstalk.Core.Repositories
             type = type ?? ChannelType.Public;
             return this.Client
                        .Get<GraphIdentity>(node.GraphId)
-                       .OutE(type)
+                       .InE(type)
                        .Select(n => new Edge()
                        {
                            To = new Identity

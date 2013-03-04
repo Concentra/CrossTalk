@@ -109,6 +109,8 @@ namespace Crosstalk.Core.App_Start
                     cm.MapIdProperty(c => c.Id);
                 });
 
+            config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+
         }
     }
 }
