@@ -36,7 +36,9 @@ namespace Crosstalk.Core.Repositories
                     queries.Add(Query.EQ(key, BsonValue.Create(vals.First())));
                 }
             }
-
+            // testing
+            var result = this.GetCollection().Find(Query.And(queries));
+            //
             return this.GetCollection().Find(Query.And(queries));
         }
 
