@@ -25,7 +25,6 @@ namespace Crosstalk.Core.Controllers
 
         [HttpPost]
         [ActionName("Delete")]
-        //public void Delete(Edge edge)
         public void Delete(JObject obj)
         {
             var edgeId = obj.GetValue("EdgeId").ToObject<long>();
