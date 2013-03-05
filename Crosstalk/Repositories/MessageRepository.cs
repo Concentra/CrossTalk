@@ -22,6 +22,11 @@ namespace Crosstalk.Core.Repositories
 
         public IEnumerable<Message> Search(NameValueCollection parameters)
         {
+            return this.Search(NameValueCollection parameters, true);
+        }
+
+        public IEnumerable<Message> Search(NameValueCollection parameters, bool and)
+        {
             var queries = new List<IMongoQuery>();
 
             foreach (var key in parameters.AllKeys)
@@ -44,7 +49,14 @@ namespace Crosstalk.Core.Repositories
                     }
                 }
             }
-            return this.GetCollection().Find(Query.And(queries));
+            if (and)
+            {
+                return this.GetCollection().Find(Query.And(queries));
+            }
+            else
+            {
+                return this.GetCollection().Find(Query.Or(queries));
+            }
         }
 
         public void Moderate(string id)

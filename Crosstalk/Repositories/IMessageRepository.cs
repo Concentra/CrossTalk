@@ -16,6 +16,7 @@ namespace Crosstalk.Core.Repositories
         bool Save(Message message);
         long CountShares(string messageId);
         int Count(Func<Message, bool> predicate);
+        IEnumerable<Message> Search(NameValueCollection parameters, bool and);
         IEnumerable<Message> Search(NameValueCollection parameters);
     }
 }

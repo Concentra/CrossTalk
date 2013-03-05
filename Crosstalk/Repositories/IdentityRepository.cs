@@ -11,6 +11,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using MongoDB.Driver.Linq;
+using System.Text.RegularExpressions;
 
 namespace Crosstalk.Core.Repositories
 {
@@ -127,7 +128,14 @@ namespace Crosstalk.Core.Repositories
                     queries.Add(Query.In(key, vals.Select(BsonValue.Create)));
                 } else if (vals.Count() == 1)
                 {
-                    queries.Add(Query.EQ(key, BsonValue.Create(vals.First())));
+                    if (Regex.IsMatch(vals.First(), @"\.\*.+\.\*"))
+                    {
+                        queries.Add(Query.Matches(key, BsonRegularExpression.Create(vals.First(), "i")));
+                    }
+                    else
+                    {
+                        queries.Add(Query.EQ(key, BsonValue.Create(vals.First())));
+                    }
                 }
             }
 
