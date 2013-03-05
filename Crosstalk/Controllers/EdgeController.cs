@@ -25,17 +25,21 @@ namespace Crosstalk.Core.Controllers
 
         [HttpPost]
         [ActionName("Delete")]
+        //public void Delete(Edge edge)
         public void Delete(JObject obj)
         {
-            var edgeId = obj.GetValue("edgeId").ToObject<long>();
+            var edgeId = obj.GetValue("EdgeId").ToObject<long>();
+            //var edgeId = edge.Id;
             this._edgeRepository.Delete(edgeId);
         }
 
         [HttpPost]
         [ActionName("Accept")]
+        //public void Accept(Edge edge)
         public void Accept(JObject obj)
         {
-            var edgeId = obj.GetValue("edgeId").ToObject<long>();
+            var edgeId = obj.GetValue("EdgeId").ToObject<long>();
+            //var edgeId = edge.Id;
             var originalEdge = this._edgeRepository.GetById(edgeId);
             var forwardEdge = new Edge() { 
                 From = originalEdge.From,
