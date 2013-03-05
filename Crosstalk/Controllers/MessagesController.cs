@@ -134,15 +134,10 @@ namespace Crosstalk.Core.Controllers
         public IEnumerable<Message> Search()
         {
             var qStr = HttpUtility.ParseQueryString(this.Request.RequestUri.Query);
-            IEnumerable<Message> messages;
+            var messages = (null==qStr["or"]) ? this._messageRepository.Search(qStr).ToList() : this._messageRepository.Search(qStr, false).ToList();
             if (null != qStr["or"])
             {
                 qStr.Remove("or");
-                messages = this._messageRepository.Search(qStr, false).ToList();
-            }
-            else
-            {
-                messages = this._messageRepository.Search(qStr).ToList();
             }
             Parallel.ForEach(messages, m =>
             {
