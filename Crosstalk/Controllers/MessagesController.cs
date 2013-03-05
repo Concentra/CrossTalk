@@ -133,7 +133,14 @@ namespace Crosstalk.Core.Controllers
         [ActionName("Search")]
         public IEnumerable<Message> Search()
         {
-            return this._messageRepository.Search(HttpUtility.ParseQueryString(this.Request.RequestUri.Query));
+            var messages = this._messageRepository.Search(HttpUtility.ParseQueryString(this.Request.RequestUri.Query)).ToList();
+            Parallel.ForEach(messages, m =>
+            {
+                m.Edge = this._edgeRepository.GetById(m.Edge.Id);
+                m.Edge.To = this._identityRepository.GetById(m.Edge.To.Id);
+                m.Edge.From = this._identityRepository.GetById(m.Edge.From.Id);
+            });
+            return messages;
         }
 
         // POST api/messages
