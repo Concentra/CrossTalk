@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Text.RegularExpressions;
 using System.Linq;
 using System.Threading.Tasks;
 using Crosstalk.Common.Repositories;
@@ -33,12 +34,16 @@ namespace Crosstalk.Core.Repositories
                 }
                 else if (vals.Count() == 1)
                 {
-                    queries.Add(Query.EQ(key, BsonValue.Create(vals.First())));
+                    if (Regex.IsMatch(vals.First(), @"\.\*.+\.\*"))
+                    {
+                        queries.Add(Query.Matches(key, BsonRegularExpression.Create(vals.First(), "i")));
+                    }
+                    else
+                    {
+                        queries.Add(Query.EQ(key, BsonValue.Create(vals.First())));
+                    }
                 }
             }
-            // testing
-            var result = this.GetCollection().Find(Query.And(queries));
-            //
             return this.GetCollection().Find(Query.And(queries));
         }
 
