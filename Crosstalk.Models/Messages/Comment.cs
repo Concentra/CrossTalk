@@ -15,6 +15,7 @@ namespace Crosstalk.Core.Models.Messages
 {
     public class Comment : IComment<Identity>
     {
+        [JsonConverter(typeof(ExpandingPartialConvertor))]
         public Partial<Identity> Author { get; set; }
         
         public string Body { get; set; }

@@ -46,6 +46,9 @@ namespace Crosstalk.Common.Models
         public Partial(Partial part)
         {
             this.Id = part.Id;
+            /*if (!part.IsPartial) {
+                this._instance = part.Value;
+            }*/
         }
 
         public Partial(T value)
