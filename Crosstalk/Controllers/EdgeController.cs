@@ -48,7 +48,7 @@ namespace Crosstalk.Core.Controllers
         public Edge Find(string from, string to, string type)
         {
             var fromId = this._identityRepository.GetById(from);
-            var toId = this._identityRepository.GetById(to);
+            var toId = "network" == to ? fromId : this._identityRepository.GetById(to);
 
             return this._edgeRepository.GetByFromTo(fromId, toId, type);
 

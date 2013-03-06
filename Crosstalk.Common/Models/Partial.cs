@@ -102,6 +102,18 @@ namespace Crosstalk.Common.Models
             }
         }
 
+        public Partial<TCast> Cast<TCast>(Func<T, TCast> transformation) where TCast : class, ISupportsPartial
+        {
+            if (this.IsPartial)
+            {
+                return new Partial<TCast>(this);
+            }
+            return new Partial<TCast>(transformation.Invoke(this._instance))
+            {
+                Id = this.Id
+            };
+        }
+
         public static explicit operator T(Partial<T> partial)
         {
             return partial.Value;
