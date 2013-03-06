@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Autofac;
 using Crosstalk.Common.Models;
 using Crosstalk.Core.Models;
 using Crosstalk.Core.Models.Channels;

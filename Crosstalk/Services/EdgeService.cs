@@ -19,7 +19,7 @@ namespace Crosstalk.Core.Services
             this._identityRepository = identityRepository;
         }
 
-        public Edge GetById(long id)
+        public Edge GetById(string id)
         {
             var edge = this._edgeRepository.GetById(id);
             Parallel.Invoke(() => edge.From = this._identityRepository.GetById(edge.From.Id),

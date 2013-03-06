@@ -3,15 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using Crosstalk.Core.Collections;
 using Crosstalk.Core.Exceptions;
 using Crosstalk.Core.Models;
+using Crosstalk.Core.Models.Messages;
 using Crosstalk.Core.Models.Channels;
 using Crosstalk.Core.Repositories;
 using Crosstalk.Core.Services;
 using MongoDB.Bson;
 using Newtonsoft.Json.Linq;
+using Crosstalk.Common.Models;
 
 namespace Crosstalk.Core.Controllers
 {
@@ -120,7 +123,17 @@ namespace Crosstalk.Core.Controllers
         [ActionName("Get")]
         public Message Get(string id)
         {
-            return this._messageRepository.Get(id);
+            var message = this._messageRepository.GetById(id);
+            message.Edge = this._edgeRepository.GetById(message.Edge.Id);
+            this._identityRepository.BindPartial(message.Edge, new[] { "From", "To" });
+            return message;
+        }
+
+        [HttpGet]
+        [ActionName("Search")]
+        public IEnumerable<Message> Search()
+        {
+            return this._messageRepository.Search(HttpUtility.ParseQueryString(this.Request.RequestUri.Query));
         }
 
         // POST api/messages
@@ -136,9 +149,16 @@ namespace Crosstalk.Core.Controllers
         }
 
         // DELETE api/values/5
-        public void Delete(int id)
+        public void Delete(string id, string action)
         {
-            throw new OutsideOfProjectScopeException();
+            if (ReportRevokeActionType.Revoke == action)
+            {
+                this._messageRepository.Revoke(id);
+            }
+            else if (ReportRevokeActionType.Moderate == action)
+            {
+                this._messageRepository.Moderate(id);
+            }
         }
     }
 }

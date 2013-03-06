@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Crosstalk.Core.Models.Relationships;
 
-
 namespace Crosstalk.Core.Models.Channels
 {
     public sealed class ChannelType

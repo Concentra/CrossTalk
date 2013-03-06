@@ -6,11 +6,18 @@ using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
+using Crosstalk.Common;
+using Crosstalk.Common.Models;
 using Crosstalk.Core.Handlers;
 using Crosstalk.Core.Repositories;
 using Crosstalk.Core.Services;
 using MongoDB.Driver;
 using Neo4jClient;
+using Crosstalk.Common.Repositories;
+using Crosstalk.Core.Models;
+using Crosstalk.Core.Models.Messages;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Options;
 
 namespace Crosstalk.Core.App_Start
 {
@@ -59,13 +66,23 @@ namespace Crosstalk.Core.App_Start
                     return client;
                 }))());
 
+            builder.Register<IRepositoryStore>(c => RepositoryStore.GetInstance()).SingleInstance();
+
             builder.Register<IMessageRepository>(c => new MessageRepository(c.Resolve<MongoDatabase>()));
+            builder.Register<ICommentRepository>(c => new CommentRepository(c.Resolve<MongoDatabase>(), c.Resolve<IMessageRepository>()));
             builder.Register<IEdgeRepository>(c => new EdgeRepository(c.Resolve<IGraphClient>()));
             builder.Register<IIdentityRepository>(c => new IdentityRepository(c.Resolve<MongoDatabase>()));
+            builder.Register<IReportRepository>(c => new ReportRepository(c.Resolve<MongoDatabase>()));
 
             builder.Register<IMessageService>(
                 c => new MessageService(c.Resolve<IMessageRepository>(), c.Resolve<IEdgeService>()));
-            builder.Register<IEdgeService>(c => new EdgeService(c.Resolve<IEdgeRepository>(), c.Resolve<IIdentityRepository>()));
+            builder.Register<IEdgeService>(
+                c => new EdgeService(c.Resolve<IEdgeRepository>(), c.Resolve<IIdentityRepository>()));
+            builder.RegisterType<ReportService>().As<IReportService>();
+
+            //builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            //       .Where(t => !t.IsAbstract && (t.Name.EndsWith("Repository") || t.Name.EndsWith("Service")))
+            //       .InstancePerMatchingLifetimeScope(AutofacWebApiDependencyResolver.ApiRequestTag);
 
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
                    .Where(t => !t.IsAbstract && typeof(ApiController).IsAssignableFrom(t))
@@ -80,6 +97,17 @@ namespace Crosstalk.Core.App_Start
 
             config.Filters.Add(new ObjectNotFoundExceptionAttribute());
 
+            // Model to Repository Mapping
+
+            RepositoryStore.GetInstance()
+                .Add<Edge>(() => container.Resolve<IEdgeRepository>())
+                .Add<Message>(() => container.Resolve<IMessageRepository>())
+                .Add<Identity>(() => container.Resolve<IIdentityRepository>());
+
+            BsonClassMap.RegisterClassMap<Partial>(cm =>
+                {
+                    cm.MapIdProperty(c => c.Id);
+                });
 
         }
     }

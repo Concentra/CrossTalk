@@ -62,6 +62,11 @@ namespace Crosstalk.Core.Repositories
             return this;
         }
 
+        public Edge GetById(string id)
+        {
+            return this.GetById(long.Parse(id));
+        }
+
         public Edge GetById(long id)
         {
             var nodes = this.Client.ExecuteGetAllNodesGremlin<GraphIdentity>(
