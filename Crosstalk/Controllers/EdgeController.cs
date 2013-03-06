@@ -44,12 +44,12 @@ namespace Crosstalk.Core.Controllers
             var forwardEdge = new Edge() { 
                 From = originalEdge.From,
                 To = originalEdge.To,
-                cType = ChannelType.Public };
+                Type = ChannelType.Public };
             var reverseEdge = new Edge()
             {
                 From = originalEdge.To,
                 To = originalEdge.From,
-                cType = ChannelType.Public
+                Type = ChannelType.Public
             };
             this._edgeRepository.Save(forwardEdge);
             this._edgeRepository.Save(reverseEdge);
@@ -88,7 +88,7 @@ namespace Crosstalk.Core.Controllers
                 new Edge()
                 {
                     Id = c.Id,
-                    cType = (ChannelType)c.RelationshipTypeKey,
+                    Type = (ChannelType)c.RelationshipTypeKey,
                     From = this._identityRepository.GetByGraphId(c.start.Id),
                     To = this._identityRepository.GetByGraphId(c.end.Id)
                 });

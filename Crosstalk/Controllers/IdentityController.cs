@@ -83,7 +83,7 @@ namespace Crosstalk.Core.Controllers
                         {
                             From = model,
                             To = model,
-                            cType = ChannelType.Public
+                            Type = ChannelType.Public
                         })
                 };
 
@@ -96,12 +96,12 @@ namespace Crosstalk.Core.Controllers
                     {
                         From = model,
                         To = this._identityRepository.GetPublicSpace(),
-                        cType = ChannelType.Public
+                        Type = ChannelType.Public
                     }).Save(new Edge
                     {
                         From = this._identityRepository.GetPublicSpace(),
                         To = model,
-                        cType = ChannelType.Public
+                        Type = ChannelType.Public
                     }));
             }
 
@@ -131,7 +131,7 @@ namespace Crosstalk.Core.Controllers
                                 {
                                     From = parent,
                                     To = model,
-                                    cType = ChannelType.Public
+                                    Type = ChannelType.Public
                                 }));
                             break;
                         case Identity.Person:
@@ -149,17 +149,17 @@ namespace Crosstalk.Core.Controllers
                                 {
                                     From = parent,
                                     To = model,
-                                    cType = ChannelType.Public
+                                    Type = ChannelType.Public
                                 }).Save(new Edge
                                 {
                                     From = model,
                                     To = parent,
-                                    cType = ChannelType.Public
+                                    Type = ChannelType.Public
                                 }).Save(new Edge
                                 {
                                     From = model,
                                     To = parent,
-                                    cType = ChannelType.Private
+                                    Type = ChannelType.Private
                                 }));
                             break;
                     }

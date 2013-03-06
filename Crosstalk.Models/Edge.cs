@@ -25,7 +25,7 @@ namespace Crosstalk.Core.Models
 
         [BsonIgnore]
         [JsonConverter(typeof(ChannelTypeConvertor))]
-        public ChannelType cType { get; set; }
+        public ChannelType Type { get; set; }
         
     }
 

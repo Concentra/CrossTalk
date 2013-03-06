@@ -28,16 +28,16 @@ namespace Crosstalk.Core.Repositories
 
         public IEdgeRepository Save(Edge edge, ChannelType type)
         {
-            edge.cType = type;
+            edge.Type = type;
             return this.Save(edge);
         }
 
         public IEdgeRepository Save(Edge edge){
-            if (null == edge.cType)
+            if (null == edge.Type)
             {
                 throw new ArgumentNullException("edge", "Edge has no channel type");
             }
-            var constructorInfo = edge.cType.ToType().GetConstructor(new Type[] {typeof (NodeReference)});
+            var constructorInfo = edge.Type.ToType().GetConstructor(new Type[] {typeof (NodeReference)});
             if (constructorInfo == null)
             {   
                 throw new ArgumentOutOfRangeException("edge", "Not a valid channel type");
@@ -113,7 +113,7 @@ namespace Crosstalk.Core.Repositories
                                },
                            From = node,
                            Id = n.Reference.Id,
-                           cType = n.TypeKey
+                           Type = n.TypeKey
                        });
         }
 
@@ -182,7 +182,7 @@ namespace Crosstalk.Core.Repositories
                             GraphId = n.EndNodeReference.Id
                         },
                     Id = n.Reference.Id,
-                    cType = n.TypeKey
+                    Type = n.TypeKey
                 });
         }
 
@@ -196,7 +196,7 @@ namespace Crosstalk.Core.Repositories
                                From = from,
                                To = to,
                                Id = e.Reference.Id,
-                               cType = e.TypeKey
+                               Type = e.TypeKey
                            }).FirstOrDefault();
         }
 
