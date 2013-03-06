@@ -134,11 +134,12 @@ namespace Crosstalk.Core.Controllers
         public IEnumerable<Message> Search()
         {
             var qStr = HttpUtility.ParseQueryString(this.Request.RequestUri.Query);
-            var messages = (null==qStr["or"]) ? this._messageRepository.Search(qStr).ToList() : this._messageRepository.Search(qStr, false).ToList();
+            var and = (null == qStr["or"]) ? true : false;
             if (null != qStr["or"])
             {
                 qStr.Remove("or");
-            }
+            }            
+            var messages = (and) ? this._messageRepository.Search(qStr).ToList() : this._messageRepository.Search(qStr, false).ToList();
             Parallel.ForEach(messages, m =>
             {
                 m.Edge = this._edgeRepository.GetById(m.Edge.Id);

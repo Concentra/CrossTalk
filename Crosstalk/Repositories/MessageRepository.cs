@@ -35,7 +35,15 @@ namespace Crosstalk.Core.Repositories
                 if (null == vals) continue;
                 if (vals.Count() > 1)
                 {
+                    if (key == "Edge._id")
+                    {
+                        var edgeIds = vals.Select(str => { long edgeId; return (long.TryParse(str, out edgeId)) ? edgeId : -1; });
+                        queries.Add(Query.In(key, edgeIds.Select(lng => BsonValue.Create(lng))));
+                    }
+                    else
+                    {
                     queries.Add(Query.In(key, vals.Select(BsonValue.Create)));
+                }
                 }
                 else if (vals.Count() == 1)
                 {
@@ -45,9 +53,17 @@ namespace Crosstalk.Core.Repositories
                     }
                     else
                     {
+                        long edgeId;
+                        if (key == "Edge._id" && long.TryParse(vals.First(), out edgeId))
+                        {
+                            queries.Add(Query.EQ(key, BsonValue.Create(edgeId)));
+                        }
+                        else
+                        {
                         queries.Add(Query.EQ(key, BsonValue.Create(vals.First())));
                     }
                 }
+            }
             }
             if (and)
             {
