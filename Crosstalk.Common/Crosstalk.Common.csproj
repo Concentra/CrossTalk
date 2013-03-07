@@ -81,6 +81,7 @@
     <Compile Include="Models\IdentityTypes.cs" />
     <Compile Include="Models\IReportable.cs" />
     <Compile Include="Models\ISupportsPartial.cs" />
+    <Compile Include="Models\NetworkDescriptor.cs" />
     <Compile Include="Models\Report.cs" />
     <Compile Include="Models\ReportableStatus.cs" />
     <Compile Include="Models\Partial.cs" />

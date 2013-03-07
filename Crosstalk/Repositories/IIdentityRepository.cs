@@ -12,6 +12,7 @@ namespace Crosstalk.Core.Repositories
     {
         IIdentityRepository Save(Identity identity);
         Identity GetById(ObjectId id);
+        Identity GetByGraphId(long id);
         Identity GetPublicSpace();
         IEnumerable<TItem> BindPartials<TItem>(IEnumerable<TItem> items, IEnumerable<string> fields);
         TItem BindPartial<TItem>(TItem item, IEnumerable<string> fields);

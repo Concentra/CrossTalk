@@ -67,6 +67,16 @@ namespace Crosstalk.Core.Repositories
             return item;
         }
 
+        public Identity GetByGraphId(long id)
+        {
+            var item = this.GetCollection().AsQueryable().SingleOrDefault(i => i.GraphId == id);
+            if (null == item)
+            {
+                throw new ObjectNotFoundException<Identity>(id);
+            }
+            return item;
+        }
+
         public IEnumerable<TItem> BindPartials<TItem>(IEnumerable<TItem> items, IEnumerable<string> fields)
         {
             var enumeratedFields = fields as IList<string> ?? fields.ToList();
@@ -139,7 +149,7 @@ namespace Crosstalk.Core.Repositories
                 }
             }
 
-            return this.GetCollection().Find(Query.And(queries));
+            return this.GetCollection().Find(Query.And(queries)).SetSortOrder(SortBy<Identity>.Ascending(i => i.Name));
         }
     }
 }
