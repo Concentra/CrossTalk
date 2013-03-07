@@ -45,6 +45,14 @@ namespace Crosstalk.Core.Repositories
 
         public Identity GetById(string id)
         {
+            if ("public" == id)
+            {
+                return this.GetPublicSpace();
+            }
+            else if ("network" == id)
+            {
+                return null;
+            }
             ObjectId oid;
             return ObjectId.TryParse(id, out oid) ? this.GetById(oid) : null;
         }

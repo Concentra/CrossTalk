@@ -70,6 +70,7 @@
     <Compile Include="Attributes\PartialRepositoryAttribute.cs" />
     <Compile Include="Client\ApiClient.cs" />
     <Compile Include="Client\IApiClient.cs" />
+    <Compile Include="Convertors\ExpandingPartialConvertor.cs" />
     <Compile Include="Convertors\ReportTypeConvertor.cs" />
     <Compile Include="Convertors\PartialConvertor.cs" />
     <Compile Include="Convertors\PartialConvertorProxy.cs" />
