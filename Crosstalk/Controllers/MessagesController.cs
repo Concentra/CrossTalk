@@ -145,8 +145,17 @@ namespace Crosstalk.Core.Controllers
                 m.Edge = this._edgeRepository.GetById(m.Edge.Id);
                 m.Edge.To = this._identityRepository.GetById(m.Edge.To.Id);
                 m.Edge.From = this._identityRepository.GetById(m.Edge.From.Id);
+                if (null != this._edgeRepository.GetByFromTo(m.Edge.From, m.Edge.To, ChannelType.Private))
+                {
+                    if (m.Edge.Id == this._edgeRepository.GetByFromTo(m.Edge.From, m.Edge.To, ChannelType.Private).Id)
+                    {
+                        m.Edge.Type = ChannelType.Private;
+                    }
+                }
+                
+                //m.Edge.Type = this._edgeRepository.GetByFromTo(m.Edge.From, m.Edge.To,)
             });
-            return messages;
+            return messages.Where(m => m.Edge.Type != ChannelType.Private);
         }
 
         // POST api/messages
