@@ -1,4 +1,5 @@
 using Neo4jClient;
+using System.ComponentModel;
 
 namespace Crosstalk.Core.Models.Relationships
 {
@@ -7,6 +8,11 @@ namespace Crosstalk.Core.Models.Relationships
         IRelationshipAllowingSourceNode<GraphIdentity>,
         IRelationshipAllowingTargetNode<GraphIdentity>
     {
+        //Testing
+        //[EditorBrowsable(EditorBrowsableState.Never)]
+        //public BaseChannel() : base(0) {}
+        //Testing
+
         protected BaseChannel(NodeReference targetNode)
             : base(targetNode) {}
 

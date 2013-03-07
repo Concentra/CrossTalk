@@ -9,11 +9,18 @@ using Crosstalk.Core.Models.Relationships;
 using MongoDB.Bson;
 using Neo4jClient;
 using Neo4jClient.Gremlin;
+using Neo4jClient.Cypher;
+using System.Collections.ObjectModel;
+using Crosstalk.Core.Services;
 
 namespace Crosstalk.Core.Repositories
 {
     public class EdgeRepository : BaseNeo4JRepository, IEdgeRepository
     {
+        //test
+        private readonly IIdentityRepository _identityRepository;
+        //test
+
         public const string Broadcast = "broadcast";
         public const string Private = "private";
 
@@ -40,6 +47,21 @@ namespace Crosstalk.Core.Repositories
             return this;
         }
 
+
+        public IEdgeRepository Delete(Edge edge)
+        {
+            return this.Delete(edge.Id);
+        }
+
+        public IEdgeRepository Delete(long id)
+        {
+            new CypherFluentQuery(this.Client)
+                .Start("r", (RelationshipReference)id)
+                .Delete("r")
+                .ExecuteWithoutResults();
+            return this;
+        }
+
         public Edge GetById(string id)
         {
             return this.GetById(long.Parse(id));
@@ -59,17 +81,19 @@ namespace Crosstalk.Core.Repositories
                     Id = id,
                     From = new Identity
                         {
-                            Id = nodes.Last().Data.Id
+                            Id = nodes.Last().Data.Id,
+                            GraphId = nodes.Last().Reference.Id
                         },
                     To = new Identity
                         {
-                            Id = nodes.First().Data.Id
+                            Id = nodes.First().Data.Id,
+                            GraphId = nodes.First().Reference.Id
                         }
                 };
         }
 
         /// <summary>
-        /// Get nodes we broadcast to
+        /// Get nodes we broadcast from
         /// </summary>
         /// <param name="node"></param>
         /// <param name="type"></param>
@@ -115,7 +139,7 @@ namespace Crosstalk.Core.Repositories
             depth = depth ?? (uint) (ChannelType.Public == type ? 3 : 1);
 
             var query = string.Format(
-                "g.v(node).as('x').outE(channel).inV.loop('x'){{it.loops < depth && it.object.Type != \"public\"{0}}}.path().scatter.dedup.filter{{it.Id == null}}",
+                "g.v(node).as('x').inE(channel).inV.loop('x'){{it.loops < depth && it.object.Type != \"public\"{0}}}.path().scatter.dedup.filter{{it.Id == null}}",
                 null == exclusions
                     ? ""
                     :  string.Format("&& !(it.object.Id in [\"{0}\"])", string.Join("\",\"", exclusions)));
@@ -175,5 +199,17 @@ namespace Crosstalk.Core.Repositories
                                Type = e.TypeKey
                            }).FirstOrDefault();
         }
+
+        public IEnumerable<CypherReturnModel> GetAllNode(Identity node)
+        {
+            var cypherResult = new CypherFluentQuery(this.Client)
+                .Start("n", (NodeReference)node.GraphId)
+                .Match("n-[r]-()")
+                .Return<RelationshipInstance<CypherReturnModel>>("r")
+                .Results;
+            var dataResult = cypherResult.Select(r => 
+                new CypherReturnModel(r.StartNodeReference, r.EndNodeReference, r.TypeKey, r.Reference.Id, r.Data));            
+            return dataResult;
+        } 
     }
 }

@@ -46,6 +46,14 @@ namespace Crosstalk.Core.Repositories
 
         public Identity GetById(string id)
         {
+            if ("public" == id)
+            {
+                return this.GetPublicSpace();
+            }
+            else if ("network" == id)
+            {
+                return null;
+            }
             ObjectId oid;
             return ObjectId.TryParse(id, out oid) ? this.GetById(oid) : null;
         }
@@ -53,6 +61,16 @@ namespace Crosstalk.Core.Repositories
         public Identity GetById(ObjectId id)
         {
             var item = this.GetCollection().AsQueryable().SingleOrDefault(i => i.Id == id.ToString());
+            if (null == item)
+            {
+                throw new ObjectNotFoundException<Identity>(id);
+            }
+            return item;
+        }
+
+        public Identity GetByGraphId(long id)
+        {
+            var item = this.GetCollection().AsQueryable().SingleOrDefault(i => i.GraphId == id);
             if (null == item)
             {
                 throw new ObjectNotFoundException<Identity>(id);
@@ -139,7 +157,7 @@ namespace Crosstalk.Core.Repositories
                 }
             }
 
-            return this.GetCollection().Find(Query.And(queries));
+            return this.GetCollection().Find(Query.And(queries)).SetSortOrder(SortBy<Identity>.Ascending(i => i.Name));
         }
     }
 }

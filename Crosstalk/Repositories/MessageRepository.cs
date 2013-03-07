@@ -22,7 +22,7 @@ namespace Crosstalk.Core.Repositories
 
         public IEnumerable<Message> Search(NameValueCollection parameters)
         {
-            return this.Search(NameValueCollection parameters, true);
+            return this.Search(parameters, true);
         }
 
         public IEnumerable<Message> Search(NameValueCollection parameters, bool and)
