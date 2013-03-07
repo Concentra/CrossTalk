@@ -45,11 +45,14 @@ namespace Crosstalk.Core.Controllers
             }
             
             var me = this._identityRepository.GetById(id);
-            
+
             /**
              * Pass through nodes to exclude.
              */
-            var edges = new List<Edge>(this._edgeRepository.GetToNode(
+            var edges = excludedIdentities.Contains("all")
+                ? this._edgeRepository.GetToNode(me, ChannelType.Public, 0).ToList()
+                  .Union(this._edgeRepository.GetFromNode(me, ChannelType.Public).ToList())
+                : new List<Edge>(this._edgeRepository.GetToNode(
                             me,
                             ChannelType.Public,
                             null,

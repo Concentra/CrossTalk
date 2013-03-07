@@ -141,7 +141,7 @@ namespace Crosstalk.Core.Repositories
                 }
             }
 
-            return this.GetCollection().Find(Query.And(queries));
+            return this.GetCollection().Find(Query.And(queries)).SetSortOrder(SortBy<Identity>.Ascending(i => i.Name));
         }
     }
 }
