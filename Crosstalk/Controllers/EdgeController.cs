@@ -50,8 +50,22 @@ namespace Crosstalk.Core.Controllers
                 To = originalEdge.From,
                 Type = ChannelType.Public
             };
+            var forwardPrivateEdge = new Edge()
+            {
+                From = originalEdge.From,
+                To = originalEdge.To,
+                Type = ChannelType.Private
+            };
+            var reversePrivateEdge = new Edge()
+            {
+                From = originalEdge.To,
+                To = originalEdge.From,
+                Type = ChannelType.Private
+            };
             this._edgeRepository.Save(forwardEdge);
             this._edgeRepository.Save(reverseEdge);
+            this._edgeRepository.Save(forwardPrivateEdge);
+            this._edgeRepository.Save(reversePrivateEdge);
             this._edgeRepository.Delete(edgeId);
         }
 
