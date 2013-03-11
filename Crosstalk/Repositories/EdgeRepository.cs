@@ -75,10 +75,13 @@ namespace Crosstalk.Core.Repositories
                     {
                         { "edge", id }
                     }).ToList();
-            
+
+            var rel = this.Client.ExecuteGetAllRelationshipsGremlin(string.Format("g.e({0}).as('x')", id), null).First();
+
             return new Edge
                 {
                     Id = id,
+                    Type = (ChannelType)rel.TypeKey,
                     From = new Identity
                         {
                             Id = nodes.Last().Data.Id,

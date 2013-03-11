@@ -4,6 +4,8 @@ using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Crosstalk.Common.Models;
+using Neo4jClient;
+using System.ComponentModel;
 
 namespace Crosstalk.Core.Models
 {
