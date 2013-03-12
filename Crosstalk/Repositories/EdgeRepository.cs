@@ -142,7 +142,7 @@ namespace Crosstalk.Core.Repositories
             depth = depth ?? (uint) (ChannelType.Public == type ? 3 : 1);
 
             var query = string.Format(
-                "g.v(node).as('x').inE(channel).inV.loop('x'){{it.loops < depth && it.object.Type != \"public\"{0}}}.path().scatter.dedup.filter{{it.Id == null}}",
+                "g.v(node).as('x').inE(channel).outV.loop('x'){{it.loops < depth && it.object.Type != \"public\"{0}}}.path().scatter.dedup.filter{{it.Id == null}}",
                 null == exclusions
                     ? ""
                     :  string.Format("&& !(it.object.Id in [\"{0}\"])", string.Join("\",\"", exclusions)));
