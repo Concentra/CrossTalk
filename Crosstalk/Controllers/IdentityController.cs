@@ -190,7 +190,7 @@ namespace Crosstalk.Core.Controllers
         /// <param name="id">ID of the Identity to update</param>
         /// <param name="model">Fields to update</param>
         /// <returns></returns>
-        public Identity Post(string id, [FromBody] Dictionary<string, object> model)
+        public Identity Post(string id, [FromBody] JObject model)
         {
             var identity = this._identityRepository.GetById(id);
             var type = identity.GetType();
@@ -199,7 +199,7 @@ namespace Crosstalk.Core.Controllers
                 var field = type.GetProperty(kv.Key);
                 if (null != field)
                 {
-                    field.SetValue(identity, kv.Value);
+                    field.SetValue(identity, kv.Value.ToObject(field.PropertyType));
                 }
             }
             this._identityRepository.Save(identity);
