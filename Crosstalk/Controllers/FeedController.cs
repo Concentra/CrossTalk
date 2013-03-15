@@ -71,7 +71,12 @@ namespace Crosstalk.Core.Controllers
                     messages.AddRange(this._messageService.GetListForEdge(edge));
                 }
             });
-            return messages;
+            var test = messages.Where(m => !messages.Any(p => m.Id == p.OriginalMessageId));
+            var test2 = test.OrderBy(m => m.Created).GroupBy(p => p.OriginalMessageId).Select(g => g.Last()).Where(t => null != t.OriginalMessageId);
+            var test3 = test.Where(t => null == t.OriginalMessageId);
+            var test4 = test2.Concat(test3).OrderBy(m => m.Created).Reverse();
+            return test4;
+            //return messages;
         }
 
     }
