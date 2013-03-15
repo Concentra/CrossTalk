@@ -68,11 +68,27 @@ namespace Crosstalk.Core.Controllers
                 edge.From = edge.From.Id == me.Id ? me : this._identityRepository.GetById(edge.From.Id);
                 lock (messages)
                 {
-                    messages.AddRange(this._messageService.GetListForEdge(edge));
+                    var temp = this._messageService.GetListForEdge(edge);
+                    foreach (var message in temp)
+                    {
+                        var messageId = message.OriginalMessageId ?? message.Id;
+                        if (!messages.Any(m => (m.OriginalMessageId ?? m.Id) == messageId))
+                        {
+                            messages.Add(message);
+                        }
+                        else
+                        {
+                            var storedMessage = messages.Where(m => (m.OriginalMessageId ?? m.Id) == messageId).Single();
+                            if (message.Created > storedMessage.Created)
+                            {
+                                messages.Remove(storedMessage);
+                                messages.Add(message);
+                            }
+                        }
+                    }
                 }
             });
             return messages;
         }
-
     }
 }
