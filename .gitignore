@@ -63,3 +63,10 @@ packages/
 
 #Test files
 *.testsettings
+
+UpgradeLog*.XML
+UpgradeLog*.htm
+*/*.orig
+*/*/*.orig
+_UpgradeReport_Files/
+Backup/
