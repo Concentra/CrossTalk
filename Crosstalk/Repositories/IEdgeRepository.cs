@@ -13,7 +13,7 @@ namespace Crosstalk.Core.Repositories
         IEdgeRepository Delete(Edge edge);
         IEdgeRepository Delete(long id);
         Edge GetById(long id);
-        IEnumerable<CypherReturnModel> GetAllNode(Identity node);
+        IEnumerable<Edge> GetAllNode(Identity node);
         IEnumerable<Edge> GetFromNode(Identity node, ChannelType type);
         IEnumerable<Edge> GetToNode(Identity node, ChannelType type);
         IEnumerable<Edge> GetToNode(Identity node, ChannelType type, uint depth);

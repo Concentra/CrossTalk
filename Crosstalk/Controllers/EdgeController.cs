@@ -95,18 +95,8 @@ namespace Crosstalk.Core.Controllers
         [HttpGet]
         public IEnumerable<Edge> Both(string id)
         {
-            var cRM = this._edgeRepository.GetAllNode(this._identityRepository.GetById(id));
-            
-            var edges = cRM.Select(c =>
-                new Edge()
-                {
-                    Id = c.Id,
-                    Type = (ChannelType)c.RelationshipTypeKey,
-                    From = this._identityRepository.GetByGraphId(c.start.Id),
-                    To = this._identityRepository.GetByGraphId(c.end.Id)
-                });
-
-            return edges;
+            var edges = this._edgeRepository.GetAllNode(this._identityRepository.GetById(id));
+            return this._identityRepository.BindPartials<Edge>(edges, new [] { "To", "From" });
         }
 
         [HttpGet]
@@ -119,7 +109,7 @@ namespace Crosstalk.Core.Controllers
         public IEnumerable<Edge> Out(string id, string type)
         {
             var edges = this._edgeRepository.GetFromNode(this._identityRepository.GetById(id), type);
-            return this._identityRepository.BindPartials(edges, new string[] {"To", "From"});
+            return this._identityRepository.BindPartials(edges, new [] {"To", "From"});
         }
 
         [HttpGet]

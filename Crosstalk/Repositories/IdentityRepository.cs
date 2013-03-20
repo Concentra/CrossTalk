@@ -17,9 +17,7 @@ namespace Crosstalk.Core.Repositories
 {
     public class IdentityRepository : BaseMongoRepository<Identity>, IIdentityRepository
     {
-        public IdentityRepository(MongoDatabase database) : base(database)
-        {
-        }
+        public IdentityRepository(MongoDatabase database) : base(database) {}
 
         protected override string Collection
         {
@@ -55,7 +53,9 @@ namespace Crosstalk.Core.Repositories
                 return null;
             }
             ObjectId oid;
-            return ObjectId.TryParse(id, out oid) ? this.GetById(oid) : null;
+            return ObjectId.TryParse(id, out oid)
+                ? this.GetById(oid)
+                : null;
         }
 
         public Identity GetById(ObjectId id)
@@ -144,7 +144,8 @@ namespace Crosstalk.Core.Repositories
                 if (vals.Count() > 1)
                 {
                     queries.Add(Query.In(key, vals.Select(BsonValue.Create)));
-                } else if (vals.Count() == 1)
+                }
+                else if (vals.Count() == 1)
                 {
                     if (Regex.IsMatch(vals.First(), @"\.\*.+\.\*"))
                     {
