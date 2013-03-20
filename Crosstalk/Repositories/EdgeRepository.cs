@@ -81,7 +81,7 @@ namespace Crosstalk.Core.Repositories
             return new Edge
                 {
                     Id = id,
-                    Type = (ChannelType)rel.TypeKey,
+                    Type = (ChannelType) rel.TypeKey,
                     From = new Identity
                         {
                             Id = nodes.Last().Data.Id,
@@ -143,7 +143,7 @@ namespace Crosstalk.Core.Repositories
 
             var query = string.Format(
                 "g.v(node).as('x').inE(channel).outV.loop('x'){{it.loops < depth && it.object.Type != \"public\"{0}}}.path().scatter.dedup.filter{{it.Id == null}}",
-                null == exclusions
+                null == exclusions || !exclusions.Any()
                     ? ""
                     :  string.Format("&& !(it.object.Id in [\"{0}\"])", string.Join("\",\"", exclusions)));
 
@@ -203,16 +203,28 @@ namespace Crosstalk.Core.Repositories
                            }).FirstOrDefault();
         }
 
-        public IEnumerable<CypherReturnModel> GetAllNode(Identity node)
+        public IEnumerable<Edge> GetAllNode(Identity node)
         {
             var cypherResult = new CypherFluentQuery(this.Client)
                 .Start("n", (NodeReference)node.GraphId)
                 .Match("n-[r]-()")
                 .Return<RelationshipInstance<CypherReturnModel>>("r")
                 .Results;
-            var dataResult = cypherResult.Select(r => 
-                new CypherReturnModel(r.StartNodeReference, r.EndNodeReference, r.TypeKey, r.Reference.Id, r.Data));            
-            return dataResult;
+            return cypherResult.Select(e => new Edge
+                {
+                    Id = e.Reference.Id,
+                    From = new Identity
+                    {
+                        Id = this.Client.Get<GraphIdentity>(e.StartNodeReference).Data.Id,
+                        GraphId = e.StartNodeReference.Id
+                    },
+                    To = new Identity
+                    {
+                        Id = this.Client.Get<GraphIdentity>(e.EndNodeReference).Data.Id,
+                        GraphId = e.EndNodeReference.Id
+                    },
+                    Type = e.TypeKey
+                });
         } 
     }
 }
