@@ -27,9 +27,11 @@ namespace Crosstalk.Core.Controllers
         [ActionName("Delete")]
         public void Delete(JObject obj)
         {
-            var edgeId = obj.GetValue("EdgeId").ToObject<long>();
+            var fromId = obj.GetValue("FromId").ToObject<string>();
+            var toId = obj.GetValue("ToId").ToObject<string>();
+            var edge = this._edgeRepository.GetByFromTo(this._identityRepository.GetById(fromId), this._identityRepository.GetById(toId), ChannelType.Request);
             //var edgeId = edge.Id;
-            this._edgeRepository.Delete(edgeId);
+            this._edgeRepository.Delete(edge);
         }
 
         [HttpPost]
@@ -37,9 +39,9 @@ namespace Crosstalk.Core.Controllers
         //public void Accept(Edge edge)
         public void Accept(JObject obj)
         {
-            var edgeId = obj.GetValue("EdgeId").ToObject<long>();
-            //var edgeId = edge.Id;
-            var originalEdge = this._edgeRepository.GetById(edgeId);
+            var fromId = obj.GetValue("FromId").ToObject<string>();
+            var toId = obj.GetValue("ToId").ToObject<string>();
+            var originalEdge = this._edgeRepository.GetByFromTo(this._identityRepository.GetById(fromId), this._identityRepository.GetById(toId), ChannelType.Request);
             var forwardEdge = new Edge() { 
                 From = originalEdge.From,
                 To = originalEdge.To,
@@ -66,7 +68,7 @@ namespace Crosstalk.Core.Controllers
             this._edgeRepository.Save(reverseEdge);
             this._edgeRepository.Save(forwardPrivateEdge);
             this._edgeRepository.Save(reversePrivateEdge);
-            this._edgeRepository.Delete(edgeId);
+            this._edgeRepository.Delete(originalEdge);
         }
 
         [HttpPost]
