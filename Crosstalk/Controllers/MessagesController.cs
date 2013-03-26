@@ -15,6 +15,7 @@ using Crosstalk.Core.Services;
 using MongoDB.Bson;
 using Newtonsoft.Json.Linq;
 using Crosstalk.Common.Models;
+using System.Collections.Specialized;
 
 namespace Crosstalk.Core.Controllers
 {
@@ -140,6 +141,28 @@ namespace Crosstalk.Core.Controllers
                 qStr.Remove("or");
             }            
             var messages = (and) ? this._messageRepository.Search(qStr).ToList() : this._messageRepository.Search(qStr, false).ToList();
+            Parallel.ForEach(messages, m =>
+            {
+                m.Edge = this._edgeRepository.GetById(m.Edge.Id);
+                m.Edge.To = this._identityRepository.GetById(m.Edge.To.Id);
+                m.Edge.From = this._identityRepository.GetById(m.Edge.From.Id);
+            });
+            return messages;
+        }
+
+        [HttpGet]
+        [ActionName("SearchFor")]
+        public IEnumerable<Message> SearchFor()
+        {
+            var qStr = HttpUtility.ParseQueryString(this.Request.RequestUri.Query);
+            var identityIds = qStr.GetValues("Identity");
+            var edgeIds = identityIds.Select(id => this._edgeRepository.GetAllNode(this._identityRepository.GetById(id))).SelectMany(es => es.Select(e => e.Id.ToString()));
+            qStr.Remove("Identity");
+            foreach (var edgeId in edgeIds)
+            {
+                qStr.Add("Edge._id", edgeId);
+            }
+            var messages = this._messageRepository.Search(qStr, false).ToList();
             Parallel.ForEach(messages, m =>
             {
                 m.Edge = this._edgeRepository.GetById(m.Edge.Id);
