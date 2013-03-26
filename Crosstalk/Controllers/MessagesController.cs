@@ -156,7 +156,7 @@ namespace Crosstalk.Core.Controllers
         {
             var qStr = HttpUtility.ParseQueryString(this.Request.RequestUri.Query);
             var identityIds = qStr.GetValues("Identity");
-            var edgeIds = identityIds.Select(id => this._edgeRepository.GetAllNode(this._identityRepository.GetById(id))).SelectMany(es => es.Select(e => e.Id.ToString()));
+            var edgeIds = (null == identityIds) ? new string[0] : identityIds.Select(id => this._edgeRepository.GetAllNode(this._identityRepository.GetById(id))).SelectMany(es => es.Select(e => e.Id.ToString()));
             qStr.Remove("Identity");
             foreach (var edgeId in edgeIds)
             {
