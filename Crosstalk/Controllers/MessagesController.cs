@@ -154,22 +154,56 @@ namespace Crosstalk.Core.Controllers
         [ActionName("SearchFor")]
         public IEnumerable<Message> SearchFor()
         {
+            var start = DateTime.Now;
             var qStr = HttpUtility.ParseQueryString(this.Request.RequestUri.Query);
-            var identityIds = qStr.GetValues("Identity");
-            var edgeIds = (null == identityIds) ? new string[0] : identityIds.Select(id => this._edgeRepository.GetAllNode(this._identityRepository.GetById(id))).SelectMany(es => es.Select(e => e.Id.ToString()));
+            var identities = qStr.GetValues("Identity")
+                .Distinct()
+                .AsParallel()
+                .Select(id => this._identityRepository.GetById(id))
+                .ToList();
             qStr.Remove("Identity");
-            foreach (var edgeId in edgeIds)
+            var edges = new List<Edge>();
+            Parallel.ForEach(identities, identity =>
             {
-                qStr.Add("Edge._id", edgeId);
-            }
-            var messages = this._messageRepository.Search(qStr, false).ToList();
-            Parallel.ForEach(messages, m =>
-            {
-                m.Edge = this._edgeRepository.GetById(m.Edge.Id);
-                m.Edge.To = this._identityRepository.GetById(m.Edge.To.Id);
-                m.Edge.From = this._identityRepository.GetById(m.Edge.From.Id);
+                foreach (var edge in this._edgeRepository.GetAllNode(identity).Where(e => ChannelType.Public == e.Type))
+                {
+                    lock (edges)
+                    {
+                        if (!edges.Any(e => e.Id == edge.Id))
+                        {
+                            edges.Add(edge);
+                            qStr.Add("Edge._id", edge.Id.ToString());
+                        }
+                    }
+                }
             });
-            return messages;
+            var messages = this._messageRepository.Search(qStr, false).ToList();
+            var missingEdges = messages.Select(m => m.Edge.Id)
+                .Distinct()
+                .Where(id => !edges.Any(e => e.Id == id))
+                .AsParallel()
+                .Select(id => this._edgeRepository.GetById(id))
+                .ToList();
+            edges.AddRange(missingEdges);
+            messages.AsParallel().ForAll(m => m.Edge = edges.Where(e => e.Id == m.Edge.Id).SingleOrDefault());
+            var missingIdentities = messages
+                .Select(m => m.Edge.From.Id)
+                .Concat(messages
+                .Select(m => m.Edge.To.Id))
+                .Distinct()
+                .Where(id => !identities.Any(i => i.Id == id))
+                .AsParallel()
+                .Select(id => this._identityRepository.GetById(id))
+                .ToList();
+            identities.AddRange(missingIdentities);
+            Parallel.ForEach(messages, message =>
+                {
+                    message.Edge.From = identities.Where(i => i.Id == message.Edge.From.Id).SingleOrDefault();
+                    message.Edge.To = identities.Where(i => i.Id == message.Edge.To.Id).SingleOrDefault();
+                });
+            var end = DateTime.Now;
+            var elapsed = (end - start).Duration();
+            return messages.OrderByDescending(m => m.Created);
         }
 
         // POST api/messages
