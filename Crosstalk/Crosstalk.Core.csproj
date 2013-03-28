@@ -189,7 +189,6 @@
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\EdgeController.cs" />
     <Compile Include="Controllers\FeedController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IdentityController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
