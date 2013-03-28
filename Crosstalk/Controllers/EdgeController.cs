@@ -30,45 +30,7 @@ namespace Crosstalk.Core.Controllers
             var fromId = obj.GetValue("FromId").ToObject<string>();
             var toId = obj.GetValue("ToId").ToObject<string>();
             var edge = this._edgeRepository.GetByFromTo(this._identityRepository.GetById(fromId), this._identityRepository.GetById(toId), ChannelType.Request);
-            //var edgeId = edge.Id;
             this._edgeRepository.Delete(edge);
-        }
-
-        [HttpPost]
-        [ActionName("Accept")]
-        //public void Accept(Edge edge)
-        public void Accept(JObject obj)
-        {
-            var fromId = obj.GetValue("FromId").ToObject<string>();
-            var toId = obj.GetValue("ToId").ToObject<string>();
-            var originalEdge = this._edgeRepository.GetByFromTo(this._identityRepository.GetById(fromId), this._identityRepository.GetById(toId), ChannelType.Request);
-            var forwardEdge = new Edge() { 
-                From = originalEdge.From,
-                To = originalEdge.To,
-                Type = ChannelType.Public };
-            var reverseEdge = new Edge()
-            {
-                From = originalEdge.To,
-                To = originalEdge.From,
-                Type = ChannelType.Public
-            };
-            var forwardPrivateEdge = new Edge()
-            {
-                From = originalEdge.From,
-                To = originalEdge.To,
-                Type = ChannelType.Private
-            };
-            var reversePrivateEdge = new Edge()
-            {
-                From = originalEdge.To,
-                To = originalEdge.From,
-                Type = ChannelType.Private
-            };
-            this._edgeRepository.Save(forwardEdge);
-            this._edgeRepository.Save(reverseEdge);
-            this._edgeRepository.Save(forwardPrivateEdge);
-            this._edgeRepository.Save(reversePrivateEdge);
-            this._edgeRepository.Delete(originalEdge);
         }
 
         [HttpPost]
