@@ -154,7 +154,6 @@ namespace Crosstalk.Core.Controllers
         [ActionName("SearchFor")]
         public IEnumerable<Message> SearchFor()
         {
-            var start = DateTime.Now;
             var qStr = HttpUtility.ParseQueryString(this.Request.RequestUri.Query);
             var identities = qStr.GetValues("Identity")
                 .Distinct()
@@ -201,8 +200,6 @@ namespace Crosstalk.Core.Controllers
                     message.Edge.From = identities.Where(i => i.Id == message.Edge.From.Id).SingleOrDefault();
                     message.Edge.To = identities.Where(i => i.Id == message.Edge.To.Id).SingleOrDefault();
                 });
-            var end = DateTime.Now;
-            var elapsed = (end - start).Duration();
             return messages.OrderByDescending(m => m.Created);
         }
 
