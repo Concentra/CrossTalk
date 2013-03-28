@@ -17,10 +17,6 @@ namespace Crosstalk.Core.Repositories
 {
     public class EdgeRepository : BaseNeo4JRepository, IEdgeRepository
     {
-        //test
-        private readonly IIdentityRepository _identityRepository;
-        //test
-
         public const string Broadcast = "broadcast";
         public const string Private = "private";
 
