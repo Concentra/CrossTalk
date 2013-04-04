@@ -111,6 +111,8 @@ namespace Crosstalk.Core.App_Start
 
             config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 
+            GlobalConfiguration.Configuration.MessageHandlers.Add(new CORSHandler());
+
         }
     }
 }
